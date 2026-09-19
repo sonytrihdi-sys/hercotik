@@ -8,10 +8,10 @@
 :root{--blue:#075bd7;--yellow:#ffc233;--ink:#18212a;--green:#35a853;--red:#e33b35}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;font-family:Arial,Helvetica,sans-serif;color:var(--ink);overflow:hidden;background:#79c9e9}
 button,input{font:inherit}.screen{display:none;position:relative;width:100vw;height:100vh;overflow:hidden}.screen.active{display:flex}
-.bg-main{background:#78cbed url('assets/bg-main.png') center/cover no-repeat}
-.bg-race{background:#5f8e54 url('assets/bg-race.png') center/cover no-repeat}
-.bg-waiting{background:#78cbed url('assets/bg-waiting-room.png') center/cover no-repeat}
-.bg-result{background:#78cbed url('assets/bg-result.jpg') center/cover no-repeat}
+.bg-main{background:#78cbed url('assets/bg-main.png') center center/100% 100% no-repeat}
+.bg-race{background:#5f8e54 url('assets/bg-race.png') center center/100% 100% no-repeat}
+.bg-waiting{background:#78cbed url('assets/bg-waiting-room.png') center center/100% 100% no-repeat}
+.bg-result{background:#78cbed url('assets/bg-result.jpg') center center/100% 100% no-repeat}
 .screen:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.10))}
 .content{position:relative;z-index:2}.btn{border:0;border-radius:17px;padding:13px 30px;font-weight:1000;letter-spacing:.4px;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.2);transition:.12s;min-width:190px}.btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.2)}.btn.primary{background:var(--yellow);color:#111}.btn.secondary{background:#fff;color:var(--blue)}.btn.green{background:#42bb62;color:#fff}.btn.red{background:#e33b35;color:#fff}.btn.small{min-width:140px;padding:9px 18px;border-radius:12px}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .launcher,.join-screen,.waiting,.result,.top3{align-items:center;justify-content:center}.launcher-card,.join-card{width:min(680px,90vw);padding:30px;border-radius:28px;background:rgba(255,255,255,.95);border:5px solid #666;box-shadow:0 12px 0 rgba(0,0,0,.22);text-align:center}.join-screen{justify-content:flex-end;padding-right:8vw}.join-card{width:min(470px,90vw)}.logo{width:min(390px,72%);height:auto;display:block;margin:0 auto 15px;filter:drop-shadow(0 7px 3px rgba(0,0,0,.2))}
@@ -29,7 +29,7 @@ h1{margin:5px 0 16px}.launcher p{margin:0 0 22px;font-weight:800;opacity:.7}.lau
 </head>
 <body>
 <section id="launcher" class="screen bg-main launcher active"><div class="content launcher-card"><img src="assets/logo.png" class="logo" alt="Hercotik"><h1>HERCOTIK TYPING RACE</h1><p>Online race — server mengontrol mulai dan selesai</p><div class="launcher-actions"><button class="btn primary" id="launchPlayer">PLAYER LINK</button><button class="btn secondary" id="launchServer">SERVER LINK</button></div></div></section>
-<section id="join" class="screen bg-main join-screen"><div class="content join-card"><img src="assets/logo.png" class="logo" alt="Hercotik"><h1>JOIN ROOM</h1><input id="playerName" class="field" placeholder="Nama peserta" maxlength="20"><div class="hint">Pilih emoji sebagai avatar</div><div id="emojiGrid" class="emoji-grid"></div><button class="btn primary" id="joinRoom">READY</button></div></section>
+<section id="join" class="screen bg-main join-screen"><div class="content join-card"><img src="assets/logo.png" class="logo" alt="Hercotik"><h1>JOIN ROOM</h1><input id="playerName" class="field" placeholder="Nama peserta" maxlength="20"><div class="hint">Pilih emoji sebagai avatar</div><div id="emojiGrid" class="emoji-grid"></div><button class="btn green" id="joinRoom">READY</button></div></section>
 <section id="waiting" class="screen bg-waiting waiting"><div class="waiting-ui"><div id="waitingTitle" class="waiting-title">WAITING FOR PARTICIPANTS</div><div id="waitingSub" class="waiting-sub">Waiting server to start race</div></div><div id="waitingPlayers" class="waiting-players"></div><div id="waitingControls" class="waiting-controls"></div></section>
 <section id="racePlayer" class="screen bg-race race"><img src="assets/logo.png" class="race-logo" alt="Hercotik"><div id="racePlayerName" class="race-player">😀 Peserta</div><div class="race-stats"><div class="stat">⚡ <span id="wpm">0</span> WPM</div><div class="stat">🎯 <span id="acc">100</span>%</div><div class="stat">❌ <span id="typo">0</span></div></div><div id="countdownPlayer" class="countdown"></div><div class="track-wrap"><div id="trackPlayer" class="track-inner"></div><div class="finish"></div></div><div class="typing-area"><div id="target" class="target"></div><input id="typing" class="typing" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ketik kalimat di atas..."><div class="race-bottom"><span id="progress">0%</span><span id="timer">0.0s</span></div></div></section>
 <section id="raceServer" class="screen bg-race race server-race"><img src="assets/logo.png" class="race-logo" alt="Hercotik"><div class="race-player">🏁 HERCOTIK • LIVE RACE</div><div class="race-stats"><div class="stat">👥 <span id="serverCount">0</span></div><div class="stat">⏱️ <span id="serverRaceTime">0.0</span>s</div></div><div id="countdownServer" class="countdown"></div><div class="track-wrap"><div id="trackServer" class="track-inner"></div><div class="finish"></div></div><div class="server-badge">SERVER • ALL PARTICIPANTS</div><div class="server-controls"><button class="btn red small" id="finishRace">FINISH RACE</button></div></section>
@@ -40,10 +40,54 @@ h1{margin:5px 0 16px}.launcher p{margin:0 0 22px;font-weight:800;opacity:.7}.lau
 const $=id=>document.getElementById(id);
 const screens=['launcher','join','waiting','racePlayer','raceServer','resultPlayer','resultServer','top3'];
 const emojis=['😀','😎','🤓','🥳','😺','🐶','🐱','🦊','🐼','🐸','🐵','🐯','🦁','🐧','🐨','🐰','🐻','🐹','🐮','🐷','🐔','🦉','🐝','🦋','🐢','🐳','🐬','🦈','🦩','🍕','🍔','🍟','🍩','🍉','🚀','⭐','🔥','⚡','🎯'];
-const text='Ras4 kaNg3n teRob\\@ti dEn6an mndEn9ark4N RekAm4N 5uAra km!,.. #m!$sy0uSoMuCh :\\*';
+const raceTexts={
+  1:'Hari ini kita berlomba mengetik secepat dan seakurat mungkin. Fokus pada teks, jaga ritme, dan selesaikan lintasan sampai garis finish.',
+  2:'Ras4 kaNg3n teRob\\@ti dEn6an mndEn9ark4N RekAm4N 5uAra km!,.. #m!$sy0uSoMuCh :\\*'
+};
+let text=raceTexts[1];
 const COUNT_STEP_MS=1250, GO_MS=900;
 let selectedEmoji='😀',ws=null,role=null,room=null,timerInt=null,countdownTimeouts=[];
-let state={me:null,players:[],start:0,raceStarted:false,finished:false,typo:0,lastValue:'',countedBeforeInput:false,countdownKey:''};
+function handle(m){
+ if(m.type==='hello'){
+   if(state.me)state.me.id=m.id;
+   return;
+ }
+
+ if(m.type==='state'){
+   if(m.level)setRaceLevel(m.level);
+   state.players=playerList(m.players||[]);
+   renderWaiting(state.players);
+
+   if(m.phase==='waiting')waitingScreen();
+   else if(m.phase==='countdown')startLocalCountdown(m.countdownAt||m.startedAt,m.raceAt);
+   else if(m.phase==='race')enterRace(m.raceAt||m.startedAt);
+   else if(m.phase==='result')showResultScreen(m.players||state.players);
+ }
+
+ if(m.type==='countdown'){
+   if(m.level)setRaceLevel(m.level);
+   startLocalCountdown(m.countdownAt||m.startedAt,m.raceAt);
+ }
+
+ if(m.type==='race'){
+   if(m.level)setRaceLevel(m.level);
+   enterRace(m.raceAt||m.startedAt);
+ }
+
+ if(m.type==='progress'){
+   let p=state.players.find(x=>x.id===m.id);
+   if(p){
+     Object.assign(p,m);
+     updatePositions();
+   }
+ }
+
+ if(m.type==='result'){
+   if(m.level)setRaceLevel(m.level);
+   state.players=playerList(m.players||state.players);
+   showResultScreen(state.players);
+ }
+}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function show(id){screens.forEach(x=>$(x).classList.remove('active'));$(id).classList.add('active')}
 function buildEmojiGrid(){const g=$('emojiGrid');g.innerHTML=emojis.slice(0,32).map((e,i)=>`<button class="emoji-choice ${i===0?'selected':''}" data-e="${e}">${e}</button>`).join('');g.querySelectorAll('.emoji-choice').forEach(b=>b.onclick=()=>{g.querySelectorAll('.emoji-choice').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedEmoji=b.dataset.e})}
@@ -74,7 +118,20 @@ function handle(m){
 function serverWaitingControls(){$('waitingControls').innerHTML=`<div class="waiting-controls-inner"><div class="room-info">ROOM: ${esc(room)}</div><div class="room-link">${esc(participantLink())}</div><button class="btn primary small" id="copyLink">COPY PLAYER LINK</button> <button class="btn green small" id="startRace">START</button></div>`;$('copyLink').onclick=()=>navigator.clipboard?.writeText(participantLink());$('startRace').onclick=()=>{if(playerList().length<1){alert('Belum ada peserta yang ready.');return}$('startRace').disabled=true;send({type:'start'})}}
 $('launchPlayer').onclick=()=>{role='player';history.replaceState({},'',location.pathname+'?mode=player');show('join')};
 $('launchServer').onclick=()=>{role='server';room=makeRoom();history.replaceState({},'',location.pathname+`?mode=server&room=${room}`);state.me={name:'SERVER',emoji:'🏁'};connect(room);waitingScreen()};
-$('joinRoom').onclick=()=>{state.me={name:$('playerName').value.trim()||'Peserta',emoji:selectedEmoji};role='player';room=roomFromUrl();if(!room){alert('Buka PLAYER LINK yang dibagikan server.');return}connect(room);waitingScreen()};
+$('joinRoom').onclick=()=>{
+ state.me={
+   name:$('playerName').value.trim()||'Peserta',
+   emoji:selectedEmoji
+ };
+ role='player';
+ room=roomFromUrl();
+
+ if(!room)return;
+
+ $('joinRoom').disabled=true;
+ connect(room);
+ waitingScreen();
+};
 function clearCountdown(){countdownTimeouts.forEach(clearTimeout);countdownTimeouts=[];['countdownPlayer','countdownServer'].forEach(id=>{$(id).style.display='none'})}
 function schedule(fn,ms){const t=setTimeout(fn,Math.max(0,ms));countdownTimeouts.push(t)}
 function startLocalCountdown(countdownAt,raceAt){

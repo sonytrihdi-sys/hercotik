@@ -1,0 +1,16 @@
+name = "hercotik"
+main = "worker.js"
+compatibility_date = "2026-09-19"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[durable_objects]
+bindings = [
+  { name = "ROOM", class_name = "Room" }
+]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]

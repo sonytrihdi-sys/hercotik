@@ -4,173 +4,4414 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>HERCOTIK — Typing Race</title>
+
 <style>
-:root{--blue:#075bd7;--yellow:#ffc233;--ink:#18212a;--green:#35a853;--red:#e33b35}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;font-family:Arial,Helvetica,sans-serif;color:var(--ink);overflow:hidden;background:#79c9e9}
-button,input{font:inherit}.screen{display:none;position:relative;width:100vw;height:100vh;overflow:hidden}.screen.active{display:flex}
-.bg-main{background:#78cbed url('assets/bg-main.png') center center/100% 100% no-repeat}
-.bg-race{background:#5f8e54 url('assets/bg-race.png') center center/100% 100% no-repeat}
-.bg-waiting{background:#78cbed url('assets/bg-waiting-room.png') center center/100% 100% no-repeat}
-.bg-result{background:#78cbed url('assets/bg-result.jpg') center center/100% 100% no-repeat}
-.screen:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.10))}
-.content{position:relative;z-index:2}.btn{border:0;border-radius:17px;padding:13px 30px;font-weight:1000;letter-spacing:.4px;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.2);transition:.12s;min-width:190px}.btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.2)}.btn.primary{background:var(--yellow);color:#111}.btn.secondary{background:#fff;color:var(--blue)}.btn.green{background:#42bb62;color:#fff}.btn.red{background:#e33b35;color:#fff}.btn.small{min-width:140px;padding:9px 18px;border-radius:12px}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.launcher,.join-screen,.waiting,.result,.top3{align-items:center;justify-content:center}.launcher-card,.join-card{width:min(680px,90vw);padding:30px;border-radius:28px;background:rgba(255,255,255,.95);border:5px solid #666;box-shadow:0 12px 0 rgba(0,0,0,.22);text-align:center}.join-screen{justify-content:flex-end;padding-right:8vw}.join-card{width:min(470px,90vw)}.logo{width:min(390px,72%);height:auto;display:block;margin:0 auto 15px;filter:drop-shadow(0 7px 3px rgba(0,0,0,.2))}
-h1{margin:5px 0 16px}.launcher p{margin:0 0 22px;font-weight:800;opacity:.7}.launcher-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}.field{width:100%;padding:13px 16px;border:3px solid #aaa;border-radius:14px;margin:5px 0 10px;outline:none;background:#fff}.field:focus{border-color:var(--blue)}.hint{font-weight:800;opacity:.62;font-size:14px;margin:7px 0 15px}.emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin:10px 0 18px}.emoji-choice{border:2px solid transparent;background:#f2f2f2;border-radius:10px;font-size:25px;padding:5px;cursor:pointer}.emoji-choice.selected{border-color:#1472dc;background:#dcebff}
-.waiting-ui{position:absolute;z-index:3;top:5vh;left:50%;transform:translateX(-50%);text-align:center;background:rgba(255,255,255,.82);padding:12px 22px;border-radius:17px;box-shadow:0 5px 0 rgba(0,0,0,.15)}.waiting-title{font-size:26px;font-weight:1000}.waiting-sub{margin-top:6px;font-weight:900}.waiting-players{position:absolute;z-index:2;left:5vw;right:5vw;top:22vh;bottom:17vh;display:flex;align-content:center;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;overflow:auto}.waiting-player{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.94);border:3px solid #555;border-radius:16px;padding:8px 14px;box-shadow:0 5px 0 rgba(0,0,0,.16);font-weight:1000}.waiting-player .emoji{font-size:32px}.waiting-controls{position:absolute;z-index:4;bottom:22px;left:0;right:0;text-align:center}.waiting-controls-inner{display:inline-block;max-width:92vw;background:rgba(255,255,255,.9);padding:10px 14px;border-radius:15px}.room-info{margin-bottom:7px;font-weight:1000}.room-link{font-size:12px;opacity:.75;max-width:80vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 auto 9px}
-.race{flex-direction:column}.race-logo{position:absolute;z-index:8;top:14px;left:18px;width:190px;filter:drop-shadow(0 5px 2px rgba(0,0,0,.28))}.race-player{position:absolute;z-index:8;top:18px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.94);border:4px solid #555;border-radius:15px;padding:7px 18px;font-weight:1000;font-size:18px;box-shadow:0 5px 0 rgba(0,0,0,.18);white-space:nowrap}.race-stats{position:absolute;z-index:8;top:16px;right:18px;display:flex;gap:8px}.stat{background:rgba(255,255,255,.94);border:3px solid #555;border-radius:13px;padding:7px 11px;font-weight:1000;box-shadow:0 4px 0 rgba(0,0,0,.16)}
-.track-wrap{position:absolute;left:3%;right:3%;top:13%;bottom:31%;overflow:hidden}.track-inner{position:absolute;inset:5% 2%}.lane{position:absolute;left:0;right:0;height:45px;transform:translateY(-50%);border-bottom:3px dashed rgba(255,255,255,.62)}.runner{position:absolute;left:0;top:50%;transform:translate(-50%,-50%);font-size:34px;transition:left .15s linear;filter:drop-shadow(0 4px 2px rgba(0,0,0,.3));white-space:nowrap}.runner.me-runner{font-size:44px}.runner .name{position:absolute;right:38px;top:50%;transform:translateY(-50%);font-size:13px;background:rgba(255,255,255,.95);border:2px solid #555;border-radius:8px;padding:2px 6px;font-weight:1000;white-space:nowrap}.finish{position:absolute;right:0;top:0;bottom:0;width:14px;background:repeating-linear-gradient(0deg,#111 0 12px,#fff 12px 24px);box-shadow:0 0 0 3px rgba(0,0,0,.2)}
-.typing-area{position:absolute;left:50%;transform:translateX(-50%);width:min(720px,84vw);bottom:18px;background:rgba(255,255,255,.97);border:5px solid #222;border-radius:22px;padding:11px 16px;box-shadow:0 9px 0 rgba(0,0,0,.25);z-index:9}.target{font-size:19px;line-height:1.4;font-weight:800;height:54px;user-select:none;overflow:hidden;overflow-wrap:anywhere;white-space:normal}.target .ok{color:#16823b}.target .bad{color:#c52020;background:#ffdada}.target .current{background:#ffe28a;border-radius:3px}.typing{width:100%;border:0;border-top:2px solid #ddd;padding:8px 3px 1px;font-size:18px;line-height:1.3;outline:none;background:transparent}.race-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:4px;font-weight:1000;font-size:13px}.server-race .track-wrap{top:12%;bottom:7%}.server-controls{position:absolute;z-index:10;bottom:16px;left:0;right:0;text-align:center}
-.countdown{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.30);font-size:150px;font-weight:1000;color:#fff;text-shadow:0 8px 0 #222}.countdown.num{animation:countPulse 1.18s ease both}.countdown.num:after{content:"";position:absolute;width:220px;height:220px;background:radial-gradient(circle,#ff5656 0 28%,#c30000 30% 48%,#671010 50% 66%,transparent 68%);border:12px solid #ff6b6b;border-radius:50%;box-shadow:0 0 70px rgba(255,0,0,.95),inset 0 0 35px rgba(255,255,255,.35);z-index:-1}.countdown.go{font-size:110px;animation:goPulse .82s ease both}.countdown.go:after{content:"";position:absolute;width:250px;height:250px;background:radial-gradient(circle,#77ff8d 0 28%,#14a934 30% 48%,#0b5e1d 50% 66%,transparent 68%);border:12px solid #85ff9a;border-radius:50%;box-shadow:0 0 75px rgba(50,255,90,.95),inset 0 0 35px rgba(255,255,255,.35);z-index:-1}@keyframes countPulse{0%{transform:scale(1.35);opacity:.2}18%{transform:scale(1.05);opacity:1}82%{transform:scale(1);opacity:1}100%{transform:scale(.97);opacity:.92}}@keyframes goPulse{0%{transform:scale(.6);opacity:.1}35%{transform:scale(1.12);opacity:1}100%{transform:scale(1);opacity:1}}
-.result-wrap{position:relative;z-index:3;width:min(980px,92vw);max-height:90vh;display:flex;flex-direction:column;min-height:0}.result-grid{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(380px,1.25fr);gap:12px;min-height:0}.result-panel{background:rgba(255,255,255,.96);border:4px solid #555;border-radius:20px;padding:13px;box-shadow:0 7px 0 rgba(0,0,0,.2);min-height:0}.result-panel h2{margin:0 0 9px;font-size:21px}.my-result{text-align:center}.my-avatar{font-size:49px}.my-name{font-size:20px;font-weight:1000;margin:1px 0 8px}.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.metric{background:#f1f1f1;border:2px solid #ccc;border-radius:10px;padding:6px}.metric b{display:block;font-size:18px}.metric span{font-size:9px;font-weight:900;opacity:.65}.rank-list{display:grid;grid-template-columns:1fr 1fr;gap:5px 7px;max-height:38vh;overflow:auto}.rank-item{display:flex;align-items:center;gap:7px;padding:6px 8px;background:#f5f5f5;border-radius:9px;font-weight:900;min-width:0}.rank-item .r{width:29px}.rank-item .e{font-size:22px}.rank-item .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rank-item .v{margin-left:auto;font-size:12px}.result-actions{text-align:center;margin-top:9px;flex:0 0 auto}.result-actions .btn{min-width:170px;padding:10px 26px}
-.server-result-wrap{width:min(1040px,94vw)}.server-top3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:end;margin-bottom:10px}.server-top-card{background:rgba(255,255,255,.97);border:4px solid #555;border-radius:19px;padding:10px 9px;box-shadow:0 7px 0 rgba(0,0,0,.18);text-align:center;min-width:0}.server-top-card.place-1{transform:translateY(-7px);padding-top:13px}.server-medal{font-size:31px}.server-top-avatar{font-size:42px}.server-top-name{font-size:16px;font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.server-top-metrics{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}.server-top-metric{background:#efefef;border-radius:8px;padding:5px;font-size:12px;font-weight:1000}.server-top-metric span{display:block;font-size:8px;opacity:.6}.server-rest{background:rgba(255,255,255,.96);border:4px solid #555;border-radius:19px;padding:10px 12px;box-shadow:0 7px 0 rgba(0,0,0,.18);max-height:26vh;overflow:auto}.server-rest-title{font-size:15px;font-weight:1000;margin-bottom:6px}.server-rank-compact{display:grid;grid-template-columns:repeat(2,1fr);gap:5px 8px}.server-rank-row{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:8px;background:#f2f2f2;font-weight:1000;min-width:0}.server-rank-row .rank-no{width:34px}.server-rank-row .rank-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.top3-wrap{position:relative;z-index:3;width:min(900px,92vw);max-height:90vh;text-align:center}.top3-title{font-size:32px;font-weight:1000;margin:0 0 11px}.top3-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;align-items:end}.top-card{background:rgba(255,255,255,.96);border:4px solid #555;border-radius:19px;padding:11px 9px;box-shadow:0 7px 0 rgba(0,0,0,.2)}.top-card:first-child{transform:translateY(-8px)}.medal{font-size:34px}.top-emoji{font-size:48px}.top-name{font-size:17px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.top-metrics{margin-top:7px;display:grid;grid-template-columns:1fr 1fr;gap:5px}.top-metric{background:#eee;border-radius:8px;padding:5px;font-weight:1000;font-size:12px}.top-metric span{display:block;font-size:8px;opacity:.6}.top-actions{margin-top:11px}.server-badge{position:absolute;z-index:10;top:58px;left:18px;background:rgba(0,0,0,.62);color:#fff;border-radius:9px;padding:6px 9px;font-size:10px;font-weight:900;letter-spacing:.5px}
-@media(max-width:900px){.join-screen{padding-right:4vw}.join-card{width:min(440px,92vw)}.race-logo{width:145px}.race-player{font-size:13px}.race-stats{top:57px;right:8px}.stat{font-size:10px;padding:5px}.track-wrap{top:18%;bottom:34%}.typing-area{width:min(650px,92vw);bottom:9px}.target{font-size:16px;height:48px}.typing{font-size:16px}.result-grid{grid-template-columns:1fr}.result-wrap{max-height:94vh;overflow:auto}.rank-list{max-height:24vh}.server-top3{gap:6px}.server-top-card{padding:7px 5px}.server-top-avatar{font-size:34px}.server-top-name{font-size:12px}.server-top-metric{font-size:10px}.server-rank-compact{grid-template-columns:1fr}.top3-wrap{width:96vw;overflow:auto}.top3-title{font-size:27px}.top3-cards{gap:6px}.top-card{padding:8px 5px}.top-emoji{font-size:40px}.top-name{font-size:13px}.top-metric{font-size:10px}}
+:root{
+  --blue:#075bd7;
+  --yellow:#ffc233;
+  --ink:#18212a;
+  --green:#35a853;
+  --red:#e33b35;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  overflow:hidden;
+  background:#79c9e9;
+}
+
+button,input{font:inherit}
+
+.screen{
+  display:none;
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+
+  /* FULL BACKGROUND, TIDAK CROP */
+  background-position:center center;
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+}
+
+.screen.active{display:flex}
+
+.bg-main{
+  background-color:#78cbed;
+  background-image:url('assets/bg-main.png');
+}
+
+.bg-race{
+  background-color:#5f8e54;
+  background-image:url('assets/bg-race.png');
+}
+
+.bg-waiting{
+  background-color:#78cbed;
+  background-image:url('assets/bg-waiting-room.png');
+}
+
+.bg-result{
+  background-color:#78cbed;
+  background-image:url('assets/bg-result.jpg');
+}
+
+.screen:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(
+    180deg,
+    rgba(255,255,255,.01),
+    rgba(0,0,0,.07)
+  );
+}
+
+.content{
+  position:relative;
+  z-index:2;
+}
+
+
+/* BUTTON */
+
+.btn{
+  border:0;
+  border-radius:17px;
+  padding:13px 30px;
+  font-weight:1000;
+  letter-spacing:.4px;
+  cursor:pointer;
+  box-shadow:0 6px 0 rgba(0,0,0,.2);
+  transition:.12s;
+  min-width:190px;
+}
+
+.btn:active{
+  transform:translateY(4px);
+  box-shadow:0 2px 0 rgba(0,0,0,.2);
+}
+
+.btn.primary{
+  background:var(--yellow);
+  color:#111;
+}
+
+.btn.secondary{
+  background:#fff;
+  color:var(--blue);
+}
+
+.btn.green{
+  background:#42bb62;
+  color:#fff;
+}
+
+.btn.red{
+  background:var(--red);
+  color:#fff;
+}
+
+.btn.small{
+  min-width:140px;
+  padding:9px 18px;
+  border-radius:12px;
+}
+
+.btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+}
+
+
+/* LAUNCHER + JOIN */
+
+.launcher,
+.join-screen,
+.waiting,
+.result,
+.top3{
+  align-items:center;
+  justify-content:center;
+}
+
+.launcher-card,
+.join-card{
+  width:min(680px,90vw);
+  padding:30px;
+  border-radius:28px;
+  background:rgba(255,255,255,.95);
+  border:5px solid #666;
+  box-shadow:0 12px 0 rgba(0,0,0,.22);
+  text-align:center;
+}
+
+.join-screen{
+  justify-content:flex-end;
+  padding-right:8vw;
+}
+
+.join-card{
+  width:min(470px,90vw);
+}
+
+.logo{
+  width:min(390px,72%);
+  height:auto;
+  display:block;
+  margin:0 auto 15px;
+  filter:drop-shadow(0 7px 3px rgba(0,0,0,.2));
+}
+
+h1{
+  margin:5px 0 16px;
+}
+
+.launcher p{
+  margin:0 0 22px;
+  font-weight:800;
+  opacity:.7;
+}
+
+.launcher-actions{
+  display:flex;
+  gap:14px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.field{
+  width:100%;
+  padding:13px 16px;
+  border:3px solid #aaa;
+  border-radius:14px;
+  margin:5px 0 10px;
+  outline:none;
+  background:#fff;
+}
+
+.field:focus{
+  border-color:var(--blue);
+}
+
+.hint{
+  font-weight:800;
+  opacity:.62;
+  font-size:14px;
+  margin:7px 0 15px;
+}
+
+.join-status{
+  min-height:20px;
+  margin-top:12px;
+  font-size:13px;
+  font-weight:800;
+  color:#b12929;
+}
+
+.emoji-grid{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:5px;
+  margin:10px 0 18px;
+}
+
+.emoji-choice{
+  border:2px solid transparent;
+  background:#f2f2f2;
+  border-radius:10px;
+  font-size:25px;
+  padding:5px;
+  cursor:pointer;
+}
+
+.emoji-choice.selected{
+  border-color:#1472dc;
+  background:#dcebff;
+}
+
+
+/* WAITING ROOM */
+
+.waiting-ui{
+  position:absolute;
+  z-index:3;
+  top:5vh;
+  left:50%;
+  transform:translateX(-50%);
+  text-align:center;
+  background:rgba(255,255,255,.86);
+  padding:12px 22px;
+  border-radius:17px;
+  box-shadow:0 5px 0 rgba(0,0,0,.15);
+}
+
+.waiting-title{
+  font-size:26px;
+  font-weight:1000;
+}
+
+.waiting-sub{
+  margin-top:6px;
+  font-weight:900;
+}
+
+.waiting-players{
+  position:absolute;
+  z-index:2;
+  left:5vw;
+  right:5vw;
+  top:22vh;
+  bottom:17vh;
+
+  display:flex;
+  align-content:center;
+  justify-content:center;
+  align-items:center;
+
+  gap:14px;
+  flex-wrap:wrap;
+  overflow:auto;
+}
+
+.waiting-player{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  background:rgba(255,255,255,.94);
+  border:3px solid #555;
+  border-radius:16px;
+
+  padding:8px 14px;
+
+  box-shadow:0 5px 0 rgba(0,0,0,.16);
+
+  font-weight:1000;
+}
+
+.waiting-player .emoji{
+  font-size:32px;
+}
+
+.waiting-controls{
+  position:absolute;
+  z-index:4;
+  bottom:22px;
+  left:0;
+  right:0;
+  text-align:center;
+}
+
+.waiting-controls-inner{
+  display:inline-block;
+  max-width:92vw;
+
+  background:rgba(255,255,255,.92);
+
+  padding:10px 14px;
+  border-radius:15px;
+}
+
+.room-info{
+  margin-bottom:7px;
+  font-weight:1000;
+}
+
+.room-link{
+  font-size:12px;
+  opacity:.75;
+
+  max-width:80vw;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+
+  margin:0 auto 9px;
+}
+
+
+/* RACE */
+
+.race{
+  flex-direction:column;
+}
+
+.race-logo{
+  position:absolute;
+  z-index:8;
+  top:14px;
+  left:18px;
+  width:190px;
+
+  filter:drop-shadow(0 5px 2px rgba(0,0,0,.28));
+}
+
+.race-player{
+  position:absolute;
+  z-index:8;
+
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+
+  background:rgba(255,255,255,.94);
+  border:4px solid #555;
+  border-radius:15px;
+
+  padding:7px 18px;
+
+  font-weight:1000;
+  font-size:18px;
+
+  box-shadow:0 5px 0 rgba(0,0,0,.18);
+  white-space:nowrap;
+}
+
+.race-stats{
+  position:absolute;
+  z-index:8;
+  top:16px;
+  right:18px;
+
+  display:flex;
+  gap:8px;
+}
+
+.stat{
+  background:rgba(255,255,255,.94);
+  border:3px solid #555;
+  border-radius:13px;
+
+  padding:7px 11px;
+
+  font-weight:1000;
+
+  box-shadow:0 4px 0 rgba(0,0,0,.16);
+}
+
+.track-wrap{
+  position:absolute;
+
+  left:3%;
+  right:3%;
+  top:13%;
+  bottom:31%;
+
+  overflow:hidden;
+}
+
+.track-inner{
+  position:absolute;
+  inset:5% 2%;
+}
+
+.lane{
+  position:absolute;
+
+  left:0;
+  right:0;
+
+  height:45px;
+
+  transform:translateY(-50%);
+
+  border-bottom:3px dashed rgba(255,255,255,.62);
+}
+
+.runner{
+  position:absolute;
+
+  left:0;
+  top:50%;
+
+  transform:translate(-50%,-50%);
+
+  font-size:34px;
+
+  transition:left .15s linear;
+
+  filter:drop-shadow(0 4px 2px rgba(0,0,0,.3));
+
+  white-space:nowrap;
+}
+
+.runner.me-runner{
+  font-size:44px;
+}
+
+.runner .name{
+  position:absolute;
+
+  right:38px;
+  top:50%;
+
+  transform:translateY(-50%);
+
+  font-size:13px;
+
+  background:rgba(255,255,255,.95);
+  border:2px solid #555;
+  border-radius:8px;
+
+  padding:2px 6px;
+
+  font-weight:1000;
+  white-space:nowrap;
+}
+
+.finish{
+  position:absolute;
+
+  right:0;
+  top:0;
+  bottom:0;
+
+  width:14px;
+
+  background:repeating-linear-gradient(
+    0deg,
+    #111 0 12px,
+    #fff 12px 24px
+  );
+
+  box-shadow:0 0 0 3px rgba(0,0,0,.2);
+}
+
+
+/* TYPING BOX */
+
+.typing-area{
+  position:absolute;
+
+  left:50%;
+  transform:translateX(-50%);
+
+  width:min(660px,82vw);
+
+  bottom:18px;
+
+  background:rgba(255,255,255,.97);
+
+  border:5px solid #222;
+  border-radius:22px;
+
+  padding:10px 15px;
+
+  box-shadow:0 9px 0 rgba(0,0,0,.25);
+
+  z-index:9;
+}
+
+.target{
+  font-size:17px;
+  line-height:1.35;
+  font-weight:800;
+
+  height:47px;
+
+  user-select:none;
+
+  overflow:hidden;
+  overflow-wrap:anywhere;
+  white-space:normal;
+}
+
+.target .ok{
+  color:#16823b;
+}
+
+.target .bad{
+  color:#c52020;
+  background:#ffdada;
+}
+
+.target .current{
+  background:#ffe28a;
+  border-radius:3px;
+}
+
+.typing{
+  width:100%;
+
+  border:0;
+  border-top:2px solid #ddd;
+
+  padding:8px 3px 1px;
+
+  font-size:17px;
+  line-height:1.3;
+
+  outline:none;
+  background:transparent;
+}
+
+.race-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  margin-top:4px;
+
+  font-weight:1000;
+  font-size:13px;
+}
+
+.server-race .track-wrap{
+  top:12%;
+  bottom:7%;
+}
+
+.server-controls{
+  position:absolute;
+
+  z-index:10;
+
+  bottom:16px;
+  left:0;
+  right:0;
+
+  text-align:center;
+}
+
+
+/* COUNTDOWN */
+
+.countdown{
+  position:absolute;
+  inset:0;
+
+  z-index:20;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(0,0,0,.28);
+
+  font-size:150px;
+  font-weight:1000;
+
+  color:#fff;
+
+  text-shadow:0 8px 0 #222;
+}
+
+.countdown.num{
+  animation:countPulse 1.45s ease both;
+}
+
+.countdown.num:after{
+  content:"";
+
+  position:absolute;
+
+  width:220px;
+  height:220px;
+
+  background:radial-gradient(
+    circle,
+    #ff5656 0 28%,
+    #c30000 30% 48%,
+    #671010 50% 66%,
+    transparent 68%
+  );
+
+  border:12px solid #ff6b6b;
+  border-radius:50%;
+
+  box-shadow:
+    0 0 70px rgba(255,0,0,.95),
+    inset 0 0 35px rgba(255,255,255,.35);
+
+  z-index:-1;
+}
+
+.countdown.go{
+  font-size:110px;
+  animation:goPulse .9s ease both;
+}
+
+.countdown.go:after{
+  content:"";
+
+  position:absolute;
+
+  width:250px;
+  height:250px;
+
+  background:radial-gradient(
+    circle,
+    #77ff8d 0 28%,
+    #14a934 30% 48%,
+    #0b5e1d 50% 66%,
+    transparent 68%
+  );
+
+  border:12px solid #85ff9a;
+  border-radius:50%;
+
+  box-shadow:
+    0 0 75px rgba(50,255,90,.95),
+    inset 0 0 35px rgba(255,255,255,.35);
+
+  z-index:-1;
+}
+
+@keyframes countPulse{
+  0%{
+    transform:scale(1.35);
+    opacity:.2;
+  }
+
+  18%{
+    transform:scale(1.05);
+    opacity:1;
+  }
+
+  82%{
+    transform:scale(1);
+    opacity:1;
+  }
+
+  100%{
+    transform:scale(.97);
+    opacity:.92;
+  }
+}
+
+@keyframes goPulse{
+  0%{
+    transform:scale(.6);
+    opacity:.1;
+  }
+
+  35%{
+    transform:scale(1.12);
+    opacity:1;
+  }
+
+  100%{
+    transform:scale(1);
+    opacity:1;
+  }
+}
+
+
+/* RESULT */
+
+.result-wrap{
+  position:relative;
+  z-index:3;
+
+  width:min(960px,91vw);
+  max-height:86vh;
+
+  display:flex;
+  flex-direction:column;
+
+  min-height:0;
+}
+
+.result-grid{
+  display:grid;
+
+  grid-template-columns:
+    minmax(240px,.75fr)
+    minmax(360px,1.25fr);
+
+  gap:12px;
+
+  min-height:0;
+}
+
+.result-panel{
+  background:rgba(255,255,255,.96);
+
+  border:4px solid #555;
+  border-radius:20px;
+
+  padding:12px;
+
+  box-shadow:0 7px 0 rgba(0,0,0,.2);
+
+  min-height:0;
+}
+
+.result-panel h2{
+  margin:0 0 8px;
+  font-size:20px;
+}
+
+.my-result{
+  text-align:center;
+}
+
+.my-avatar{
+  font-size:44px;
+}
+
+.my-name{
+  font-size:19px;
+  font-weight:1000;
+  margin:1px 0 7px;
+}
+
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:6px;
+}
+
+.metric{
+  background:#f1f1f1;
+
+  border:2px solid #ccc;
+  border-radius:10px;
+
+  padding:5px;
+}
+
+.metric b{
+  display:block;
+  font-size:17px;
+}
+
+.metric span{
+  font-size:9px;
+  font-weight:900;
+  opacity:.65;
+}
+
+.rank-list{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  gap:5px 7px;
+
+  max-height:34vh;
+
+  overflow:auto;
+}
+
+.rank-item{
+  display:flex;
+  align-items:center;
+
+  gap:7px;
+
+  padding:6px 8px;
+
+  background:#f5f5f5;
+
+  border-radius:9px;
+
+  font-weight:900;
+
+  min-width:0;
+}
+
+.rank-item .r{
+  width:29px;
+}
+
+.rank-item .e{
+  font-size:22px;
+}
+
+.rank-item .n{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.rank-item .v{
+  margin-left:auto;
+  font-size:12px;
+}
+
+.result-actions{
+  text-align:center;
+  margin-top:8px;
+  flex:0 0 auto;
+}
+
+.result-actions .btn{
+  min-width:170px;
+  padding:9px 25px;
+}
+
+
+/* SERVER RESULT */
+
+.server-result-wrap{
+  width:min(1020px,93vw);
+}
+
+.server-top3{
+  display:grid;
+
+  grid-template-columns:repeat(3,minmax(0,1fr));
+
+  gap:10px;
+
+  align-items:end;
+
+  margin-bottom:10px;
+}
+
+.server-top-card{
+  background:rgba(255,255,255,.97);
+
+  border:4px solid #555;
+  border-radius:19px;
+
+  padding:9px;
+
+  box-shadow:0 7px 0 rgba(0,0,0,.18);
+
+  text-align:center;
+
+  min-width:0;
+}
+
+.server-top-card.place-1{
+  transform:translateY(-7px);
+  padding-top:12px;
+}
+
+.server-medal{
+  font-size:30px;
+}
+
+.server-top-avatar{
+  font-size:40px;
+}
+
+.server-top-name{
+  font-size:16px;
+  font-weight:1000;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.server-top-metrics{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  gap:5px;
+
+  margin-top:6px;
+}
+
+.server-top-metric{
+  background:#efefef;
+
+  border-radius:8px;
+
+  padding:5px;
+
+  font-size:12px;
+  font-weight:1000;
+}
+
+.server-top-metric span{
+  display:block;
+  font-size:8px;
+  opacity:.6;
+}
+
+.server-rest{
+  background:rgba(255,255,255,.96);
+
+  border:4px solid #555;
+  border-radius:19px;
+
+  padding:9px 11px;
+
+  box-shadow:0 7px 0 rgba(0,0,0,.18);
+
+  max-height:23vh;
+
+  overflow:auto;
+}
+
+.server-rest-title{
+  font-size:15px;
+  font-weight:1000;
+
+  margin-bottom:6px;
+}
+
+.server-rank-compact{
+  display:grid;
+
+  grid-template-columns:repeat(2,1fr);
+
+  gap:5px 8px;
+}
+
+.server-rank-row{
+  display:flex;
+  align-items:center;
+
+  gap:8px;
+
+  padding:5px 8px;
+
+  background:#f2f2f2;
+
+  border-radius:8px;
+
+  font-weight:900;
+
+  min-width:0;
+}
+
+.server-rank-row .rank-no{
+  width:34px;
+}
+
+.server-rank-row .rank-name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+
+/* TOP 3 */
+
+.top3-wrap{
+  position:relative;
+  z-index:3;
+
+  width:min(960px,92vw);
+
+  text-align:center;
+}
+
+.top3-title{
+  font-size:37px;
+
+  margin:0 0 14px;
+
+  text-shadow:0 3px 0 rgba(255,255,255,.7);
+}
+
+.top3-cards{
+  display:grid;
+
+  grid-template-columns:repeat(3,1fr);
+
+  gap:14px;
+
+  align-items:end;
+}
+
+.top-card{
+  background:rgba(255,255,255,.97);
+
+  border:5px solid #555;
+  border-radius:22px;
+
+  padding:14px 10px;
+
+  box-shadow:0 9px 0 rgba(0,0,0,.2);
+}
+
+.top-card:first-child{
+  transform:translateY(-10px);
+}
+
+.medal{
+  font-size:42px;
+}
+
+.top-emoji{
+  font-size:54px;
+}
+
+.top-name{
+  font-size:20px;
+  font-weight:1000;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.top-metrics{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  gap:6px;
+
+  margin-top:8px;
+}
+
+.top-metric{
+  background:#eee;
+
+  border-radius:9px;
+
+  padding:6px;
+
+  font-size:13px;
+  font-weight:1000;
+}
+
+.top-metric span{
+  display:block;
+  font-size:8px;
+  opacity:.6;
+}
+
+.top-actions{
+  margin-top:16px;
+}
+
+
+/* RESPONSIVE */
+
+@media(max-width:780px){
+
+  .join-screen{
+    justify-content:center;
+    padding-right:0;
+  }
+
+  .race-logo{
+    width:120px;
+  }
+
+  .race-player{
+    top:66px;
+    font-size:14px;
+  }
+
+  .race-stats{
+    top:10px;
+    right:10px;
+    gap:4px;
+  }
+
+  .stat{
+    font-size:12px;
+    padding:5px 7px;
+  }
+
+  .track-wrap{
+    top:18%;
+    bottom:33%;
+  }
+
+  .typing-area{
+    width:92vw;
+  }
+
+  .result-grid{
+    grid-template-columns:1fr;
+  }
+
+  .rank-list{
+    max-height:22vh;
+  }
+
+  .server-top3,
+  .top3-cards{
+    grid-template-columns:1fr;
+    max-height:59vh;
+    overflow:auto;
+  }
+
+  .server-top-card.place-1,
+  .top-card:first-child{
+    transform:none;
+  }
+
+  .server-rank-compact{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-height:700px){
+
+  .result-wrap{
+    max-height:92vh;
+  }
+
+  .result-panel{
+    padding:8px;
+  }
+
+  .my-avatar{
+    font-size:35px;
+  }
+
+  .rank-list{
+    max-height:28vh;
+  }
+
+  .result-actions{
+    margin-top:5px;
+  }
+
+  .server-top-card{
+    padding:6px;
+  }
+
+  .server-medal{
+    font-size:24px;
+  }
+
+  .server-top-avatar{
+    font-size:32px;
+  }
+
+  .server-rest{
+    max-height:20vh;
+  }
+}
 </style>
 </head>
+
 <body>
-<section id="launcher" class="screen bg-main launcher active"><div class="content launcher-card"><img src="assets/logo.png" class="logo" alt="Hercotik"><h1>HERCOTIK TYPING RACE</h1><p>Online race — server mengontrol mulai dan selesai</p><div class="launcher-actions"><button class="btn primary" id="launchPlayer">PLAYER LINK</button><button class="btn secondary" id="launchServer">SERVER LINK</button></div></div></section>
-<section id="join" class="screen bg-main join-screen"><div class="content join-card"><img src="assets/logo.png" class="logo" alt="Hercotik"><h1>JOIN ROOM</h1><input id="playerName" class="field" placeholder="Nama peserta" maxlength="20"><div class="hint">Pilih emoji sebagai avatar</div><div id="emojiGrid" class="emoji-grid"></div><button class="btn green" id="joinRoom">READY</button></div></section>
-<section id="waiting" class="screen bg-waiting waiting"><div class="waiting-ui"><div id="waitingTitle" class="waiting-title">WAITING FOR PARTICIPANTS</div><div id="waitingSub" class="waiting-sub">Waiting server to start race</div></div><div id="waitingPlayers" class="waiting-players"></div><div id="waitingControls" class="waiting-controls"></div></section>
-<section id="racePlayer" class="screen bg-race race"><img src="assets/logo.png" class="race-logo" alt="Hercotik"><div id="racePlayerName" class="race-player">😀 Peserta</div><div class="race-stats"><div class="stat">⚡ <span id="wpm">0</span> WPM</div><div class="stat">🎯 <span id="acc">100</span>%</div><div class="stat">❌ <span id="typo">0</span></div></div><div id="countdownPlayer" class="countdown"></div><div class="track-wrap"><div id="trackPlayer" class="track-inner"></div><div class="finish"></div></div><div class="typing-area"><div id="target" class="target"></div><input id="typing" class="typing" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ketik kalimat di atas..."><div class="race-bottom"><span id="progress">0%</span><span id="timer">0.0s</span></div></div></section>
-<section id="raceServer" class="screen bg-race race server-race"><img src="assets/logo.png" class="race-logo" alt="Hercotik"><div class="race-player">🏁 HERCOTIK • LIVE RACE</div><div class="race-stats"><div class="stat">👥 <span id="serverCount">0</span></div><div class="stat">⏱️ <span id="serverRaceTime">0.0</span>s</div></div><div id="countdownServer" class="countdown"></div><div class="track-wrap"><div id="trackServer" class="track-inner"></div><div class="finish"></div></div><div class="server-badge">SERVER • ALL PARTICIPANTS</div><div class="server-controls"><button class="btn red small" id="finishRace">FINISH RACE</button></div></section>
-<section id="resultPlayer" class="screen bg-result result"><div class="result-wrap"><div class="result-grid"><div class="result-panel"><h2>YOUR RESULT</h2><div id="myResult" class="my-result"></div></div><div class="result-panel"><h2>ALL RANKING</h2><div id="rankList" class="rank-list"></div></div></div><div class="result-actions"><button class="btn primary" id="nextTop3">NEXT</button></div></div></section>
-<section id="resultServer" class="screen bg-result result"><div class="result-wrap server-result-wrap"><div id="serverTop3" class="server-top3"></div><div class="server-rest"><div class="server-rest-title">ALL PARTICIPANTS</div><div id="serverRankList" class="server-rank-compact"></div></div><div class="result-actions"><button class="btn primary" id="serverNextTop3">NEXT</button></div></div></section>
-<section id="top3" class="screen bg-result top3"><div class="top3-wrap"><h1 class="top3-title">🏆 TOP 3</h1><div id="top3Cards" class="top3-cards"></div><div class="top-actions"><button class="btn secondary" id="restart">NEW RACE</button></div></div></section>
+
+
+<!-- HOME -->
+
+<section
+  id="launcher"
+  class="screen bg-main launcher active"
+>
+  <div class="content launcher-card">
+
+    <img
+      src="assets/logo.png"
+      class="logo"
+      alt="Hercotik"
+    >
+
+    <h1>
+      HERCOTIK TYPING RACE
+    </h1>
+
+    <p>
+      Online race — server mengontrol mulai dan selesai
+    </p>
+
+    <div class="launcher-actions">
+
+      <button
+        class="btn primary"
+        id="launchPlayer"
+      >
+        PLAYER LINK
+      </button>
+
+      <button
+        class="btn secondary"
+        id="launchServer"
+      >
+        SERVER LINK
+      </button>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- JOIN -->
+
+<section
+  id="join"
+  class="screen bg-main join-screen"
+>
+  <div class="content join-card">
+
+    <img
+      src="assets/logo.png"
+      class="logo"
+      alt="Hercotik"
+    >
+
+    <h1>
+      JOIN ROOM
+    </h1>
+
+    <input
+      id="playerName"
+      class="field"
+      placeholder="Nama peserta"
+      maxlength="20"
+    >
+
+    <div class="hint">
+      Pilih emoji sebagai avatar
+    </div>
+
+    <div
+      id="emojiGrid"
+      class="emoji-grid"
+    ></div>
+
+    <button
+      class="btn green"
+      id="joinRoom"
+    >
+      READY
+    </button>
+
+    <div
+      id="joinStatus"
+      class="join-status"
+    ></div>
+
+  </div>
+</section>
+
+
+<!-- WAITING -->
+
+<section
+  id="waiting"
+  class="screen bg-waiting waiting"
+>
+
+  <div class="waiting-ui">
+
+    <div
+      id="waitingTitle"
+      class="waiting-title"
+    >
+      WAITING FOR PARTICIPANTS
+    </div>
+
+    <div
+      id="waitingSub"
+      class="waiting-sub"
+    >
+      Waiting server to start race
+    </div>
+
+  </div>
+
+  <div
+    id="waitingPlayers"
+    class="waiting-players"
+  ></div>
+
+  <div
+    id="waitingControls"
+    class="waiting-controls"
+  ></div>
+
+</section>
+
+
+<!-- PLAYER RACE -->
+
+<section
+  id="racePlayer"
+  class="screen bg-race race"
+>
+
+  <img
+    src="assets/logo.png"
+    class="race-logo"
+    alt="Hercotik"
+  >
+
+  <div
+    id="racePlayerName"
+    class="race-player"
+  >
+    😀 Peserta
+  </div>
+
+  <div class="race-stats">
+
+    <div class="stat">
+      ⚡ <span id="wpm">0</span> WPM
+    </div>
+
+    <div class="stat">
+      🎯 <span id="acc">100</span>%
+    </div>
+
+    <div class="stat">
+      ❌ <span id="typo">0</span>
+    </div>
+
+  </div>
+
+  <div
+    id="countdownPlayer"
+    class="countdown"
+  ></div>
+
+  <div class="track-wrap">
+
+    <div
+      id="trackPlayer"
+      class="track-inner"
+    ></div>
+
+    <div class="finish"></div>
+
+  </div>
+
+  <div class="typing-area">
+
+    <div
+      id="target"
+      class="target"
+    ></div>
+
+    <input
+      id="typing"
+      class="typing"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      placeholder="Ketik kalimat di atas..."
+    >
+
+    <div class="race-bottom">
+
+      <span id="progress">
+        0%
+      </span>
+
+      <span id="timer">
+        0.0s
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- SERVER RACE -->
+
+<section
+  id="raceServer"
+  class="screen bg-race race server-race"
+>
+
+  <img
+    src="assets/logo.png"
+    class="race-logo"
+    alt="Hercotik"
+  >
+
+  <div class="race-player">
+    🏁 HERCOTIK • LIVE RACE
+  </div>
+
+  <div class="race-stats">
+
+    <div class="stat">
+      👥 <span id="serverCount">0</span>
+    </div>
+
+    <div class="stat">
+      ⏱️ <span id="serverRaceTime">0.0</span>s
+    </div>
+
+  </div>
+
+  <div
+    id="countdownServer"
+    class="countdown"
+  ></div>
+
+  <div class="track-wrap">
+
+    <div
+      id="trackServer"
+      class="track-inner"
+    ></div>
+
+    <div class="finish"></div>
+
+  </div>
+
+  <div class="server-controls">
+
+    <button
+      class="btn red small"
+      id="finishRace"
+    >
+      FINISH RACE
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- PLAYER RESULT -->
+
+<section
+  id="resultPlayer"
+  class="screen bg-result result"
+>
+
+  <div class="result-wrap">
+
+    <div class="result-grid">
+
+      <div class="result-panel">
+
+        <h2>
+          YOUR RESULT
+        </h2>
+
+        <div
+          id="myResult"
+          class="my-result"
+        ></div>
+
+      </div>
+
+
+      <div class="result-panel">
+
+        <h2>
+          ALL RANKING
+        </h2>
+
+        <div
+          id="rankList"
+          class="rank-list"
+        ></div>
+
+      </div>
+
+    </div>
+
+
+    <div class="result-actions">
+
+      <button
+        class="btn primary"
+        id="nextTop3"
+      >
+        NEXT
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- SERVER RESULT -->
+
+<section
+  id="resultServer"
+  class="screen bg-result result"
+>
+
+  <div class="result-wrap server-result-wrap">
+
+    <div
+      id="serverTop3"
+      class="server-top3"
+    ></div>
+
+
+    <div class="server-rest">
+
+      <div class="server-rest-title">
+        ALL PARTICIPANTS
+      </div>
+
+      <div
+        id="serverRankList"
+        class="server-rank-compact"
+      ></div>
+
+    </div>
+
+
+    <div class="result-actions">
+
+      <button
+        class="btn primary"
+        id="serverNextTop3"
+      >
+        NEXT
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- TOP 3 -->
+
+<section
+  id="top3"
+  class="screen bg-result top3"
+>
+
+  <div class="top3-wrap">
+
+    <h1 class="top3-title">
+      🏆 TOP 3
+    </h1>
+
+    <div
+      id="top3Cards"
+      class="top3-cards"
+    ></div>
+
+    <div class="top-actions">
+
+      <button
+        class="btn secondary"
+        id="restart"
+      >
+        NEW RACE
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
 <script>
-const $=id=>document.getElementById(id);
-const screens=['launcher','join','waiting','racePlayer','raceServer','resultPlayer','resultServer','top3'];
-const emojis=['😀','😎','🤓','🥳','😺','🐶','🐱','🦊','🐼','🐸','🐵','🐯','🦁','🐧','🐨','🐰','🐻','🐹','🐮','🐷','🐔','🦉','🐝','🦋','🐢','🐳','🐬','🦈','🦩','🍕','🍔','🍟','🍩','🍉','🚀','⭐','🔥','⚡','🎯'];
-const raceTexts={
-  1:'Hari ini kita berlomba mengetik secepat dan seakurat mungkin. Fokus pada teks, jaga ritme, dan selesaikan lintasan sampai garis finish.',
-  2:'Ras4 kaNg3n teRob\\@ti dEn6an mndEn9ark4N RekAm4N 5uAra km!,.. #m!$sy0uSoMuCh :\\*'
+
+const $ = id => document.getElementById(id);
+
+const screens = [
+  'launcher',
+  'join',
+  'waiting',
+  'racePlayer',
+  'raceServer',
+  'resultPlayer',
+  'resultServer',
+  'top3'
+];
+
+const emojis = [
+  '😀','😎','🤓','🥳',
+  '😺','🐶','🐱','🦊',
+  '🐼','🐸','🐵','🐯',
+  '🦁','🐧','🐨','🐰',
+  '🐻','🐹','🐮','🐷',
+  '🐔','🦉','🐝','🦋',
+  '🐢','🐳','🐬','🦈',
+  '🦩','🍕','🍔','🍟',
+  '🍩','🍉','🚀','⭐',
+  '🔥','⚡','🎯'
+];
+
+
+/* =========================
+   TEXT LEVEL
+========================= */
+
+const raceTexts = {
+
+  1:
+  'Hari ini kita berlomba mengetik secepat dan seakurat mungkin. Fokus pada teks, jaga ritme, dan selesaikan lintasan sampai garis finish.',
+
+  2:
+  'Ras4 kaNg3n teRob\\@ti dEn6an mndEn9ark4N RekAm4N 5uAra km!,.. #m!$sy0uSoMuCh :\\*'
+
 };
-let text=raceTexts[1];
-const COUNT_STEP_MS=1250, GO_MS=900;
-let selectedEmoji='😀',ws=null,role=null,room=null,timerInt=null,countdownTimeouts=[];
-function handle(m){
- if(m.type==='hello'){
-   if(state.me)state.me.id=m.id;
-   return;
- }
 
- if(m.type==='state'){
-   if(m.level)setRaceLevel(m.level);
-   state.players=playerList(m.players||[]);
-   renderWaiting(state.players);
 
-   if(m.phase==='waiting')waitingScreen();
-   else if(m.phase==='countdown')startLocalCountdown(m.countdownAt||m.startedAt,m.raceAt);
-   else if(m.phase==='race')enterRace(m.raceAt||m.startedAt);
-   else if(m.phase==='result')showResultScreen(m.players||state.players);
- }
+/* Countdown dibuat lebih lama */
 
- if(m.type==='countdown'){
-   if(m.level)setRaceLevel(m.level);
-   startLocalCountdown(m.countdownAt||m.startedAt,m.raceAt);
- }
+const COUNT_STEP_MS = 1600;
+const GO_MS = 1000;
 
- if(m.type==='race'){
-   if(m.level)setRaceLevel(m.level);
-   enterRace(m.raceAt||m.startedAt);
- }
 
- if(m.type==='progress'){
-   let p=state.players.find(x=>x.id===m.id);
-   if(p){
-     Object.assign(p,m);
-     updatePositions();
-   }
- }
+let text = raceTexts[1];
 
- if(m.type==='result'){
-   if(m.level)setRaceLevel(m.level);
-   state.players=playerList(m.players||state.players);
-   showResultScreen(state.players);
- }
-}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function show(id){screens.forEach(x=>$(x).classList.remove('active'));$(id).classList.add('active')}
-function buildEmojiGrid(){const g=$('emojiGrid');g.innerHTML=emojis.slice(0,32).map((e,i)=>`<button class="emoji-choice ${i===0?'selected':''}" data-e="${e}">${e}</button>`).join('');g.querySelectorAll('.emoji-choice').forEach(b=>b.onclick=()=>{g.querySelectorAll('.emoji-choice').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedEmoji=b.dataset.e})}
-buildEmojiGrid();
-function playerList(arr=state.players){return (arr||[]).filter(p=>p.role!=='server')}
-function roomFromUrl(){return new URL(location.href).searchParams.get('room')}
-function wsUrl(r){const p=location.protocol==='https:'?'wss':'ws';return `${p}://${location.host}/ws?room=${encodeURIComponent(r)}&role=${role}`}
-function connect(r){room=r;ws=new WebSocket(wsUrl(r));ws.onopen=()=>send({type:'hello',role,name:state.me?.name||'SERVER',emoji:state.me?.emoji||'🏁'});ws.onmessage=e=>handle(JSON.parse(e.data));ws.onclose=()=>{};ws.onerror=()=>{}}
-function send(o){if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}
-function makeRoom(){return crypto.randomUUID().replaceAll('-','').slice(0,8).toUpperCase()}
-function participantLink(){return `${location.origin}${location.pathname}?mode=player&room=${room}`}
-function renderWaiting(players){const ps=playerList(players);$('waitingPlayers').innerHTML=ps.map(p=>`<div class="waiting-player"><span class="emoji">${esc(p.emoji)}</span><span class="name">${esc(p.name)}</span></div>`).join('');$('serverCount').textContent=ps.length}
-function waitingScreen(){show('waiting');$('waitingTitle').textContent=role==='server'?'WAITING FOR PARTICIPANTS':'WAITING ROOM';$('waitingSub').textContent=role==='server'?'Press START when everyone is ready':'Waiting server to start race';if(role==='server')serverWaitingControls();else $('waitingControls').innerHTML=''}
-function handle(m){
- if(m.type==='hello'){if(state.me)state.me.id=m.id;return}
- if(m.type==='state'){
-   state.players=playerList(m.players||[]);renderWaiting(state.players);
-   if(m.phase==='waiting')waitingScreen();
-   else if(m.phase==='countdown')startLocalCountdown(m.countdownAt||m.startedAt,m.raceAt);
-   else if(m.phase==='race')enterRace(m.raceAt||m.startedAt);
-   else if(m.phase==='result')showResultScreen(m.players||state.players);
- }
- if(m.type==='countdown')startLocalCountdown(m.countdownAt||m.startedAt,m.raceAt);
- if(m.type==='race')enterRace(m.raceAt||m.startedAt);
- if(m.type==='progress'){let p=state.players.find(x=>x.id===m.id);if(p){Object.assign(p,m);updatePositions()}}
- if(m.type==='result'){state.players=playerList(m.players||state.players);showResultScreen(state.players)}
-}
-function serverWaitingControls(){$('waitingControls').innerHTML=`<div class="waiting-controls-inner"><div class="room-info">ROOM: ${esc(room)}</div><div class="room-link">${esc(participantLink())}</div><button class="btn primary small" id="copyLink">COPY PLAYER LINK</button> <button class="btn green small" id="startRace">START</button></div>`;$('copyLink').onclick=()=>navigator.clipboard?.writeText(participantLink());$('startRace').onclick=()=>{if(playerList().length<1){alert('Belum ada peserta yang ready.');return}$('startRace').disabled=true;send({type:'start'})}}
-$('launchPlayer').onclick=()=>{role='player';history.replaceState({},'',location.pathname+'?mode=player');show('join')};
-$('launchServer').onclick=()=>{role='server';room=makeRoom();history.replaceState({},'',location.pathname+`?mode=server&room=${room}`);state.me={name:'SERVER',emoji:'🏁'};connect(room);waitingScreen()};
-$('joinRoom').onclick=()=>{
- state.me={
-   name:$('playerName').value.trim()||'Peserta',
-   emoji:selectedEmoji
- };
- role='player';
- room=roomFromUrl();
+let selectedEmoji = '😀';
 
- if(!room)return;
+let ws = null;
+let role = null;
+let room = null;
 
- $('joinRoom').disabled=true;
- connect(room);
- waitingScreen();
+let timerInt = null;
+let countdownTimeouts = [];
+
+
+let state = {
+
+  me:null,
+
+  players:[],
+
+  start:0,
+
+  raceStarted:false,
+
+  finished:false,
+
+  typo:0,
+
+  lastValue:'',
+
+  countedBeforeInput:false,
+
+  countdownKey:'',
+
+  level:1
+
 };
-function clearCountdown(){countdownTimeouts.forEach(clearTimeout);countdownTimeouts=[];['countdownPlayer','countdownServer'].forEach(id=>{$(id).style.display='none'})}
-function schedule(fn,ms){const t=setTimeout(fn,Math.max(0,ms));countdownTimeouts.push(t)}
-function startLocalCountdown(countdownAt,raceAt){
- const key=`${countdownAt}|${raceAt}`;if(state.countdownKey===key)return;state.countdownKey=key;state.raceStarted=false;state.finished=false;clearCountdown();show(role==='player'?'racePlayer':'raceServer');buildTrack(role==='player'?'trackPlayer':'trackServer');
- const cd=$(role==='player'?'countdownPlayer':'countdownServer');cd.style.display='flex';
- const base=Number(countdownAt)||Date.now(),targetRace=Number(raceAt)||base+(COUNT_STEP_MS*3)+GO_MS;
- [3,2,1].forEach((n,i)=>schedule(()=>{cd.className='countdown num';cd.textContent=String(n)},base+i*COUNT_STEP_MS-Date.now()));
- schedule(()=>{cd.className='countdown go';cd.textContent='GO!'},base+COUNT_STEP_MS*3-Date.now());
- schedule(()=>{cd.style.display='none';enterRace(targetRace)},targetRace-Date.now());
+
+
+/* =========================
+   SCREEN
+========================= */
+
+function show(id){
+
+  screens.forEach(screen => {
+
+    $(screen).classList.remove('active');
+
+  });
+
+  $(id).classList.add('active');
+
 }
-function buildTrack(id){const t=$(id);t.innerHTML='';const ps=playerList();ps.forEach((p,i)=>{const lane=document.createElement('div');lane.className='lane';lane.style.top=((i+1)/(ps.length+1)*100)+'%';const run=document.createElement('div');run.className='runner '+(p.id===state.me?.id?'me-runner':'');run.id=(id==='trackPlayer'?'pr':'sr')+p.id;run.innerHTML=`<span class="name">${esc(p.name)}</span>${esc(p.emoji)}`;lane.appendChild(run);t.appendChild(lane)})}
-function renderTarget(v=''){const target=$('target');target.innerHTML=[...text].map((c,i)=>{let cls=i<v.length?(v[i]===c?'ok':'bad'):(i===v.length?'current':'');return `<span id="c${i}" class="${cls}">${c===' '?'&nbsp;':esc(c)}</span>`}).join('')}
-function enterRace(raceAt){
- raceAt=Number(raceAt)||Date.now();if(state.raceStarted&&state.start===raceAt)return;clearCountdown();show(role==='player'?'racePlayer':'raceServer');state.start=raceAt;state.raceStarted=true;state.finished=false;state.countdownKey='';buildTrack(role==='player'?'trackPlayer':'trackServer');
- if(role==='player'){$('racePlayerName').textContent=`${state.me.emoji} ${state.me.name}`;$('typing').disabled=false;$('typing').value='';state.typo=0;state.lastValue='';state.countedBeforeInput=false;$('wpm').textContent='0';$('acc').textContent='100';$('typo').textContent='0';$('progress').textContent='0%';renderTarget('');$('typing').focus();clearInterval(timerInt);timerInt=setInterval(updatePlayerStats,80)}else{clearInterval(timerInt);timerInt=setInterval(updateServerTime,100)}updatePositions()
+
+
+/* =========================
+   SECURITY ESCAPE
+========================= */
+
+function esc(value){
+
+  return String(value ?? '')
+    .replace(
+      /[&<>"']/g,
+      char => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+      }[char])
+    );
+
 }
-function elapsedMs(){return Math.max(1,Date.now()-state.start)}
-function updatePlayerStats(){const p=state.players.find(x=>x.id===state.me?.id);if(!p)return;const elapsed=elapsedMs();p.wpm=Math.round((p.correct||0)/5/(elapsed/60000));p.acc=p.typed?((p.correct||0)/p.typed*100):100;$('wpm').textContent=p.wpm||0;$('acc').textContent=Math.round(p.acc);$('typo').textContent=state.typo;$('progress').textContent=Math.round((p.progress||0)*100)+'%';$('timer').textContent=(elapsed/1000).toFixed(1)+'s';updatePositions()}
-function updateServerTime(){$('serverRaceTime').textContent=(elapsedMs()/1000).toFixed(1);updatePositions()}
-function updatePositions(){playerList().forEach(p=>{const a=$('pr'+p.id),b=$('sr'+p.id),x=(Math.min(1,p.progress||0)*100)+'%';if(a)a.style.left=x;if(b)b.style.left=x})}
-const typing=$('typing');
-typing.addEventListener('beforeinput',e=>{if(!state.raceStarted||state.finished)return;state.countedBeforeInput=false;if(!String(e.inputType||'').startsWith('insert'))return;const data=e.data;if(typeof data!=='string'||!data.length)return;const start=typing.selectionStart??typing.value.length;for(let j=0;j<data.length;j++){if(data[j]!==text[start+j])state.typo++}state.countedBeforeInput=true});
-typing.addEventListener('input',e=>{
- if(!state.raceStarted||state.finished)return;const v=typing.value;
- if(String(e.inputType||'').startsWith('insert')&&!state.countedBeforeInput){const old=state.lastValue;let prefix=0;while(prefix<old.length&&prefix<v.length&&old[prefix]===v[prefix])prefix++;let oldEnd=old.length-1,newEnd=v.length-1;while(oldEnd>=prefix&&newEnd>=prefix&&old[oldEnd]===v[newEnd]){oldEnd--;newEnd--}const inserted=v.slice(prefix,newEnd+1);for(let j=0;j<inserted.length;j++){if(inserted[j]!==text[prefix+j])state.typo++}}
- state.countedBeforeInput=false;state.lastValue=v;let correct=0;for(let i=0;i<v.length;i++)if(v[i]===text[i])correct++;const p=state.players.find(x=>x.id===state.me?.id);if(!p)return;p.progress=Math.min(1,v.length/text.length);p.correct=correct;p.typed=v.length;p.typo=state.typo;renderTarget(v);updatePlayerStats();send({type:'progress',progress:p.progress,correct,typed:v.length,typo:state.typo,wpm:p.wpm,acc:p.acc});if(v===text){state.finished=true;typing.disabled=true;p.done=true;p.time=elapsedMs()/1000;send({type:'finish',time:p.time,wpm:p.wpm,acc:p.acc,typo:state.typo})}
-});
-$('finishRace').onclick=()=>send({type:'finishRace'});
-function sortPlayers(players){return playerList(players).slice().sort((a,b)=>(a.rank||9999)-(b.rank||9999)||(a.time||9999)-(b.time||9999))}
-function metricValue(p,key){if(!p?.done)return '-';if(key==='time')return Number(p.time||0).toFixed(1)+'s';if(key==='acc')return Math.round(Number(p.acc||0))+'%';return p[key]??'-'}
-function rankHtml(players){return sortPlayers(players).map((p,i)=>`<div class="rank-item"><span class="r">#${p.rank||i+1}</span><span class="e">${esc(p.emoji)}</span><span class="n">${esc(p.name)}</span><span class="v">${p.done?Number(p.time||0).toFixed(1)+'s':'-'}</span></div>`).join('')}
-function resultMetrics(p){if(!p)return '<div class="my-name">-</div>';return `<div class="my-avatar">${esc(p.emoji)}</div><div class="my-name">${esc(p.name)}</div><div class="metrics"><div class="metric"><b>#${p.rank||'-'}</b><span>RANK</span></div><div class="metric"><b>${metricValue(p,'wpm')}</b><span>WPM</span></div><div class="metric"><b>${metricValue(p,'typo')}</b><span>TYPO</span></div><div class="metric"><b>${metricValue(p,'time')}</b><span>TOTAL TIME</span></div></div>`}
-function serverTop3Html(players){return sortPlayers(players).slice(0,3).map((p,i)=>`<div class="server-top-card place-${i+1}"><div class="server-medal">${['🥇','🥈','🥉'][i]}</div><div class="server-top-avatar">${esc(p.emoji)}</div><div class="server-top-name">${esc(p.name)}</div><div class="server-top-metrics"><div class="server-top-metric">#${p.rank||i+1}<span>RANK</span></div><div class="server-top-metric">${metricValue(p,'wpm')}<span>WPM</span></div><div class="server-top-metric">${metricValue(p,'typo')}<span>TYPO</span></div><div class="server-top-metric">${metricValue(p,'time')}<span>TOTAL TIME</span></div></div></div>`).join('')}
-function serverRestHtml(players){return sortPlayers(players).slice(3).map((p,i)=>`<div class="server-rank-row"><span class="rank-no">#${p.rank||i+4}</span><span>${esc(p.emoji)}</span><span class="rank-name">${esc(p.name)}</span></div>`).join('')||'<div class="server-rank-row"><span>—</span><span class="rank-name">Tidak ada peserta lain</span></div>'}
-function showResultScreen(players){state.raceStarted=false;state.players=playerList(players);clearInterval(timerInt);clearCountdown();if(role==='server'){$('serverTop3').innerHTML=serverTop3Html(state.players);$('serverRankList').innerHTML=serverRestHtml(state.players);show('resultServer')}else{const me=state.players.find(x=>x.id===state.me?.id);$('myResult').innerHTML=resultMetrics(me);$('rankList').innerHTML=rankHtml(state.players);show('resultPlayer')}}
-function showTop3(){show('top3');const top=sortPlayers(state.players).slice(0,3);$('top3Cards').innerHTML=top.map((p,i)=>`<div class="top-card"><div class="medal">${['🥇','🥈','🥉'][i]}</div><div class="top-emoji">${esc(p.emoji)}</div><div class="top-name">${esc(p.name)}</div><div class="top-metrics"><div class="top-metric">#${p.rank||i+1}<span>RANK</span></div><div class="top-metric">${metricValue(p,'wpm')}<span>WPM</span></div><div class="top-metric">${metricValue(p,'typo')}<span>TYPO</span></div><div class="top-metric">${metricValue(p,'time')}<span>TOTAL TIME</span></div></div></div>`).join('')}
-$('nextTop3').onclick=showTop3;$('serverNextTop3').onclick=showTop3;
-$('restart').onclick=()=>{state.raceStarted=false;state.finished=false;if(role==='server'){send({type:'newRace'});waitingScreen()}else waitingScreen()};
-(function boot(){const u=new URL(location.href),m=u.searchParams.get('mode'),r=u.searchParams.get('room');if(m==='player'){role='player';room=r||'';show('join')}else if(m==='server'){role='server';room=r||makeRoom();history.replaceState({},'',location.pathname+`?mode=server&room=${room}`);state.me={name:'SERVER',emoji:'🏁'};connect(room);waitingScreen()}})();
+
+
+/* =========================
+   LEVEL
+========================= */
+
+function setRaceLevel(level){
+
+  state.level =
+    Number(level) === 2
+      ? 2
+      : 1;
+
+  text = raceTexts[state.level];
+
+}
+
+
+/* =========================
+   ROOM
+========================= */
+
+function makeRoom(){
+
+  return crypto.randomUUID()
+    .replaceAll('-','')
+    .slice(0,8)
+    .toUpperCase();
+
+}
+
+
+function roomFromUrl(){
+
+  return new URL(location.href)
+    .searchParams
+    .get('room') || '';
+
+}
+
+
+function participantLink(){
+
+  const url = new URL(location.href);
+
+  url.search = '';
+
+  url.searchParams.set(
+    'mode',
+    'player'
+  );
+
+  url.searchParams.set(
+    'room',
+    room
+  );
+
+  return url.toString();
+
+}
+
+
+/* =========================
+   PLAYER LIST
+========================= */
+
+function playerList(
+  source = state.players
+){
+
+  return Array.isArray(source)
+    ? source
+    : [];
+
+}
+
+
+/* =========================
+   WEBSOCKET
+========================= */
+
+function send(message){
+
+  if(
+    ws &&
+    ws.readyState === WebSocket.OPEN
+  ){
+
+    ws.send(
+      JSON.stringify(message)
+    );
+
+  }
+
+}
+
+
+function connect(roomCode){
+
+  if(
+    ws &&
+    (
+      ws.readyState === WebSocket.OPEN ||
+      ws.readyState === WebSocket.CONNECTING
+    )
+  ){
+
+    try{
+      ws.close();
+    }catch{}
+
+  }
+
+
+  const protocol =
+    location.protocol === 'https:'
+      ? 'wss:'
+      : 'ws:';
+
+
+  ws = new WebSocket(
+    `${protocol}//${location.host}/ws?room=${encodeURIComponent(roomCode)}`
+  );
+
+
+  ws.onopen = () => {
+
+    $('joinStatus').textContent = '';
+
+    send({
+
+      type:'hello',
+
+      role,
+
+      name:
+        state.me?.name ||
+        'Peserta',
+
+      emoji:
+        state.me?.emoji ||
+        '😀'
+
+    });
+
+  };
+
+
+  ws.onmessage = event => {
+
+    try{
+
+      handle(
+        JSON.parse(
+          event.data || '{}'
+        )
+      );
+
+    }catch(error){
+
+      console.error(error);
+
+    }
+
+  };
+
+
+  ws.onerror = () => {
+
+    if(role === 'player'){
+
+      $('joinStatus').textContent =
+        'Koneksi gagal. Coba tekan READY lagi.';
+
+      $('joinRoom').disabled = false;
+
+    }
+
+  };
+
+
+  ws.onclose = () => {
+
+    if(
+      role === 'player' &&
+      !state.raceStarted
+    ){
+
+      $('joinRoom').disabled = false;
+
+    }
+
+  };
+
+}
+
+
+/* =========================
+   EMOJI
+========================= */
+
+function renderEmojiGrid(){
+
+  $('emojiGrid').innerHTML =
+    emojis
+      .map(
+        (emoji,index) => `
+
+        <button
+          type="button"
+          class="emoji-choice ${index === 0 ? 'selected' : ''}"
+          data-emoji="${emoji}"
+        >
+          ${emoji}
+        </button>
+
+        `
+      )
+      .join('');
+
+
+  $('emojiGrid')
+    .querySelectorAll('.emoji-choice')
+    .forEach(button => {
+
+      button.onclick = () => {
+
+        selectedEmoji =
+          button.dataset.emoji;
+
+
+        $('emojiGrid')
+          .querySelectorAll('.emoji-choice')
+          .forEach(item => {
+
+            item.classList.remove(
+              'selected'
+            );
+
+          });
+
+
+        button.classList.add(
+          'selected'
+        );
+
+      };
+
+    });
+
+}
+
+
+renderEmojiGrid();
+
+
+/* =========================
+   WAITING ROOM
+========================= */
+
+function renderWaiting(
+  players = state.players
+){
+
+  state.players =
+    playerList(players);
+
+
+  $('waitingPlayers').innerHTML =
+
+    state.players.length
+
+      ? state.players
+          .map(
+            player => `
+
+            <div class="waiting-player">
+
+              <span class="emoji">
+                ${esc(player.emoji)}
+              </span>
+
+              <span>
+                ${esc(player.name)}
+              </span>
+
+            </div>
+
+            `
+          )
+          .join('')
+
+      : `
+
+        <div class="waiting-player">
+
+          <span class="emoji">
+            ⏳
+          </span>
+
+          <span>
+            Menunggu peserta...
+          </span>
+
+        </div>
+
+        `;
+
+
+  $('serverCount').textContent =
+    state.players.length;
+
+}
+
+
+function waitingScreen(){
+
+  show('waiting');
+
+
+  $('waitingTitle').textContent =
+
+    role === 'server'
+
+      ? 'WAITING FOR PARTICIPANTS'
+
+      : 'WAITING ROOM';
+
+
+  $('waitingSub').textContent =
+
+    role === 'server'
+
+      ? 'Press START when everyone is ready'
+
+      : 'Waiting server to start race';
+
+
+  if(role === 'server'){
+
+    serverWaitingControls();
+
+  }else{
+
+    $('waitingControls').innerHTML = '';
+
+  }
+
+
+  renderWaiting();
+
+}
+
+
+/* =========================
+   SERVER WAITING CONTROLS
+========================= */
+
+function serverWaitingControls(){
+
+  $('waitingControls').innerHTML = `
+
+    <div class="waiting-controls-inner">
+
+      <div class="room-info">
+        ROOM: ${esc(room)}
+      </div>
+
+      <div class="room-link">
+        ${esc(participantLink())}
+      </div>
+
+      <button
+        class="btn primary small"
+        id="copyLink"
+      >
+        COPY PLAYER LINK
+      </button>
+
+      <button
+        class="btn green small"
+        id="startRace"
+      >
+        START
+      </button>
+
+    </div>
+
+  `;
+
+
+  $('copyLink').onclick =
+    async () => {
+
+      const link =
+        participantLink();
+
+
+      try{
+
+        await navigator.clipboard
+          .writeText(link);
+
+
+        $('copyLink').textContent =
+          'COPIED!';
+
+
+        setTimeout(
+          () => {
+
+            if($('copyLink')){
+
+              $('copyLink').textContent =
+                'COPY PLAYER LINK';
+
+            }
+
+          },
+          1200
+        );
+
+      }catch{
+
+        $('waitingSub').textContent =
+          link;
+
+      }
+
+    };
+
+
+  $('startRace').onclick = () => {
+
+    if(
+      playerList().length < 1
+    ){
+
+      $('waitingSub').textContent =
+        'Belum ada peserta yang READY';
+
+      return;
+
+    }
+
+
+    $('startRace').disabled = true;
+
+
+    $('waitingSub').textContent =
+      'Race starting...';
+
+
+    send({
+      type:'start'
+    });
+
+  };
+
+}
+
+
+/* =========================
+   SERVER MESSAGE HANDLER
+========================= */
+
+function handle(message){
+
+
+  if(
+    message.type === 'hello'
+  ){
+
+    if(state.me){
+
+      state.me.id =
+        message.id;
+
+    }
+
+    return;
+
+  }
+
+
+  if(
+    message.type === 'state'
+  ){
+
+    if(message.level){
+
+      setRaceLevel(
+        message.level
+      );
+
+    }
+
+
+    state.players =
+      playerList(
+        message.players || []
+      );
+
+
+    renderWaiting(
+      state.players
+    );
+
+
+    if(
+      message.phase === 'waiting'
+    ){
+
+      waitingScreen();
+
+    }
+
+
+    else if(
+      message.phase === 'countdown'
+    ){
+
+      startLocalCountdown(
+
+        message.countdownAt ||
+        message.startedAt,
+
+        message.raceAt
+
+      );
+
+    }
+
+
+    else if(
+      message.phase === 'race'
+    ){
+
+      enterRace(
+
+        message.raceAt ||
+        message.startedAt
+
+      );
+
+    }
+
+
+    else if(
+      message.phase === 'result'
+    ){
+
+      showResultScreen(
+
+        message.players ||
+        state.players
+
+      );
+
+    }
+
+
+    return;
+
+  }
+
+
+  if(
+    message.type === 'countdown'
+  ){
+
+    if(message.level){
+
+      setRaceLevel(
+        message.level
+      );
+
+    }
+
+
+    startLocalCountdown(
+
+      message.countdownAt ||
+      message.startedAt,
+
+      message.raceAt
+
+    );
+
+
+    return;
+
+  }
+
+
+  if(
+    message.type === 'race'
+  ){
+
+    if(message.level){
+
+      setRaceLevel(
+        message.level
+      );
+
+    }
+
+
+    enterRace(
+
+      message.raceAt ||
+      message.startedAt
+
+    );
+
+
+    return;
+
+  }
+
+
+  if(
+    message.type === 'progress'
+  ){
+
+    const player =
+      state.players.find(
+        item =>
+          item.id === message.id
+      );
+
+
+    if(player){
+
+      Object.assign(
+        player,
+        message
+      );
+
+
+      updatePositions();
+
+    }
+
+
+    return;
+
+  }
+
+
+  if(
+    message.type === 'result'
+  ){
+
+    if(message.level){
+
+      setRaceLevel(
+        message.level
+      );
+
+    }
+
+
+    state.players =
+      playerList(
+        message.players ||
+        state.players
+      );
+
+
+    showResultScreen(
+      state.players
+    );
+
+  }
+
+}
+
+
+/* =========================
+   HOME BUTTONS
+========================= */
+
+$('launchPlayer').onclick = () => {
+
+  role = 'player';
+
+  room = '';
+
+
+  history.replaceState(
+    {},
+    '',
+    location.pathname + '?mode=player'
+  );
+
+
+  $('joinStatus').textContent =
+    'Gunakan PLAYER LINK dari server agar terhubung ke room.';
+
+
+  show('join');
+
+};
+
+
+$('launchServer').onclick = () => {
+
+  role = 'server';
+
+  room = makeRoom();
+
+
+  state.me = {
+    name:'SERVER',
+    emoji:'🏁'
+  };
+
+
+  history.replaceState(
+    {},
+    '',
+    location.pathname +
+    `?mode=server&room=${room}`
+  );
+
+
+  connect(room);
+
+  waitingScreen();
+
+};
+
+
+/* =========================
+   READY PLAYER
+========================= */
+
+$('joinRoom').onclick = () => {
+
+  room =
+    roomFromUrl();
+
+
+  $('joinStatus').textContent =
+    '';
+
+
+  /*
+  Tidak pakai popup / alert.
+  */
+
+  if(!room){
+
+    $('joinStatus').textContent =
+      'Buka PLAYER LINK yang dibagikan server.';
+
+    return;
+
+  }
+
+
+  state.me = {
+
+    name:
+      $('playerName')
+        .value
+        .trim() ||
+      'Peserta',
+
+    emoji:
+      selectedEmoji
+
+  };
+
+
+  role = 'player';
+
+
+  $('joinRoom').disabled =
+    true;
+
+
+  connect(room);
+
+  waitingScreen();
+
+};
+
+
+/* =========================
+   COUNTDOWN
+========================= */
+
+function clearCountdown(){
+
+  countdownTimeouts
+    .forEach(
+      clearTimeout
+    );
+
+
+  countdownTimeouts = [];
+
+
+  [
+    'countdownPlayer',
+    'countdownServer'
+  ]
+  .forEach(id => {
+
+    $(id).style.display =
+      'none';
+
+    $(id).textContent =
+      '';
+
+    $(id).className =
+      'countdown';
+
+  });
+
+}
+
+
+function schedule(
+  functionToRun,
+  delay
+){
+
+  const timeout =
+    setTimeout(
+
+      functionToRun,
+
+      Math.max(
+        0,
+        delay
+      )
+
+    );
+
+
+  countdownTimeouts.push(
+    timeout
+  );
+
+}
+
+
+function startLocalCountdown(
+  countdownAt,
+  raceAt
+){
+
+  const key =
+    `${countdownAt}|${raceAt}`;
+
+
+  if(
+    state.countdownKey === key
+  ){
+
+    return;
+
+  }
+
+
+  state.countdownKey =
+    key;
+
+
+  state.raceStarted =
+    false;
+
+
+  state.finished =
+    false;
+
+
+  clearCountdown();
+
+
+  show(
+    role === 'player'
+      ? 'racePlayer'
+      : 'raceServer'
+  );
+
+
+  buildTrack(
+    role === 'player'
+      ? 'trackPlayer'
+      : 'trackServer'
+  );
+
+
+  const countdown =
+    $(
+      role === 'player'
+        ? 'countdownPlayer'
+        : 'countdownServer'
+    );
+
+
+  countdown.style.display =
+    'flex';
+
+
+  const base =
+    Number(countdownAt) ||
+    Date.now();
+
+
+  const targetRace =
+    Number(raceAt) ||
+
+    base +
+
+    (
+      COUNT_STEP_MS * 3
+    ) +
+
+    GO_MS;
+
+
+  [3,2,1].forEach(
+    (number,index) => {
+
+      schedule(
+
+        () => {
+
+          countdown.className =
+            'countdown num';
+
+          countdown.textContent =
+            String(number);
+
+        },
+
+        base +
+        (
+          index *
+          COUNT_STEP_MS
+        ) -
+        Date.now()
+
+      );
+
+    }
+  );
+
+
+  schedule(
+
+    () => {
+
+      countdown.className =
+        'countdown go';
+
+      countdown.textContent =
+        'GO!';
+
+    },
+
+    base +
+    (
+      COUNT_STEP_MS * 3
+    ) -
+    Date.now()
+
+  );
+
+
+  schedule(
+
+    () => {
+
+      countdown.style.display =
+        'none';
+
+
+      enterRace(
+        targetRace
+      );
+
+    },
+
+    targetRace -
+    Date.now()
+
+  );
+
+}
+
+
+/* =========================
+   TRACK
+========================= */
+
+function buildTrack(id){
+
+  const track =
+    $(id);
+
+
+  track.innerHTML =
+    '';
+
+
+  const players =
+    playerList();
+
+
+  players.forEach(
+    (player,index) => {
+
+      const lane =
+        document.createElement(
+          'div'
+        );
+
+
+      lane.className =
+        'lane';
+
+
+      lane.style.top =
+
+        (
+          (
+            index + 1
+          ) /
+
+          (
+            players.length + 1
+          ) *
+
+          100
+        )
+
+        + '%';
+
+
+      const runner =
+        document.createElement(
+          'div'
+        );
+
+
+      runner.className =
+
+        'runner ' +
+
+        (
+          player.id ===
+          state.me?.id
+
+            ? 'me-runner'
+
+            : ''
+        );
+
+
+      runner.id =
+
+        (
+          id === 'trackPlayer'
+            ? 'pr'
+            : 'sr'
+        )
+
+        + player.id;
+
+
+      runner.innerHTML = `
+
+        <span class="name">
+          ${esc(player.name)}
+        </span>
+
+        ${esc(player.emoji)}
+
+      `;
+
+
+      lane.appendChild(
+        runner
+      );
+
+
+      track.appendChild(
+        lane
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   TARGET TEXT
+========================= */
+
+function renderTarget(
+  value = ''
+){
+
+  $('target').innerHTML =
+
+    [...text]
+      .map(
+        (character,index) => {
+
+          const className =
+
+            index < value.length
+
+              ? (
+                  value[index] ===
+                  character
+
+                    ? 'ok'
+                    : 'bad'
+                )
+
+              : (
+                  index ===
+                  value.length
+
+                    ? 'current'
+                    : ''
+                );
+
+
+          return `
+
+            <span class="${className}">
+              ${
+                character === ' '
+                  ? '&nbsp;'
+                  : esc(character)
+              }
+            </span>
+
+          `;
+
+        }
+      )
+      .join('');
+
+}
+
+
+/* =========================
+   START RACE
+========================= */
+
+function enterRace(
+  raceAt
+){
+
+  raceAt =
+    Number(raceAt) ||
+    Date.now();
+
+
+  if(
+    state.raceStarted &&
+    state.start === raceAt
+  ){
+
+    return;
+
+  }
+
+
+  clearCountdown();
+
+
+  show(
+    role === 'player'
+      ? 'racePlayer'
+      : 'raceServer'
+  );
+
+
+  state.start =
+    raceAt;
+
+
+  state.raceStarted =
+    true;
+
+
+  state.finished =
+    false;
+
+
+  state.countdownKey =
+    '';
+
+
+  buildTrack(
+    role === 'player'
+      ? 'trackPlayer'
+      : 'trackServer'
+  );
+
+
+  if(
+    role === 'player'
+  ){
+
+    $('racePlayerName').textContent =
+
+      `${
+        state.me?.emoji ||
+        '😀'
+      } ${
+        state.me?.name ||
+        'Peserta'
+      }`;
+
+
+    $('typing').disabled =
+      false;
+
+
+    $('typing').value =
+      '';
+
+
+    state.typo =
+      0;
+
+
+    state.lastValue =
+      '';
+
+
+    state.countedBeforeInput =
+      false;
+
+
+    $('wpm').textContent =
+      '0';
+
+
+    $('acc').textContent =
+      '100';
+
+
+    $('typo').textContent =
+      '0';
+
+
+    $('progress').textContent =
+      '0%';
+
+
+    $('timer').textContent =
+      '0.0s';
+
+
+    renderTarget('');
+
+
+    $('typing').focus();
+
+
+    clearInterval(
+      timerInt
+    );
+
+
+    timerInt =
+      setInterval(
+        updatePlayerStats,
+        80
+      );
+
+  }
+
+
+  else{
+
+    $('serverRaceTime').textContent =
+      '0.0';
+
+
+    clearInterval(
+      timerInt
+    );
+
+
+    timerInt =
+      setInterval(
+        updateServerTime,
+        100
+      );
+
+  }
+
+
+  updatePositions();
+
+}
+
+
+/* =========================
+   TIMER + WPM
+========================= */
+
+function elapsedMs(){
+
+  return Math.max(
+    1,
+    Date.now() -
+    state.start
+  );
+
+}
+
+
+function updatePlayerStats(){
+
+  const player =
+    state.players.find(
+      item =>
+        item.id ===
+        state.me?.id
+    );
+
+
+  if(!player){
+    return;
+  }
+
+
+  const elapsed =
+    elapsedMs();
+
+
+  player.wpm =
+    Math.round(
+
+      (
+        (
+          player.correct ||
+          0
+        ) /
+        5
+      )
+
+      /
+
+      (
+        elapsed /
+        60000
+      )
+
+    );
+
+
+  player.acc =
+
+    player.typed
+
+      ? (
+          (
+            player.correct ||
+            0
+          ) /
+
+          player.typed *
+
+          100
+        )
+
+      : 100;
+
+
+  $('wpm').textContent =
+    player.wpm || 0;
+
+
+  $('acc').textContent =
+    Math.round(
+      player.acc
+    );
+
+
+  /* TYPO KUMULATIF */
+
+  $('typo').textContent =
+    state.typo;
+
+
+  $('progress').textContent =
+
+    Math.round(
+      (
+        player.progress ||
+        0
+      ) *
+      100
+    )
+
+    + '%';
+
+
+  $('timer').textContent =
+
+    (
+      elapsed /
+      1000
+    )
+    .toFixed(1)
+
+    + 's';
+
+
+  updatePositions();
+
+}
+
+
+function updateServerTime(){
+
+  $('serverRaceTime').textContent =
+
+    (
+      elapsedMs() /
+      1000
+    )
+    .toFixed(1);
+
+
+  updatePositions();
+
+}
+
+
+/* =========================
+   POSITION RUNNER
+========================= */
+
+function updatePositions(){
+
+  playerList()
+    .forEach(
+      player => {
+
+        const playerRunner =
+          $(
+            'pr' +
+            player.id
+          );
+
+
+        const serverRunner =
+          $(
+            'sr' +
+            player.id
+          );
+
+
+        const position =
+
+          (
+            Math.min(
+              1,
+              player.progress ||
+              0
+            ) *
+
+            100
+          )
+
+          + '%';
+
+
+        if(playerRunner){
+
+          playerRunner.style.left =
+            position;
+
+        }
+
+
+        if(serverRunner){
+
+          serverRunner.style.left =
+            position;
+
+        }
+
+      }
+    );
+
+}
+
+
+/* =========================
+   CORRECT PREFIX
+========================= */
+
+function correctPrefixLength(
+  value
+){
+
+  let index = 0;
+
+
+  while(
+
+    index < value.length &&
+
+    index < text.length &&
+
+    value[index] ===
+    text[index]
+
+  ){
+
+    index++;
+
+  }
+
+
+  return index;
+
+}
+
+
+/* =========================
+   TYPING + TYPO
+========================= */
+
+const typing =
+  $('typing');
+
+
+/*
+Setiap karakter salah langsung
+menambah TYPO.
+
+Menghapus / memperbaiki karakter
+TIDAK mengurangi TYPO.
+*/
+
+typing.addEventListener(
+  'beforeinput',
+  event => {
+
+    if(
+      !state.raceStarted ||
+      state.finished
+    ){
+
+      return;
+
+    }
+
+
+    state.countedBeforeInput =
+      false;
+
+
+    if(
+      !String(
+        event.inputType ||
+        ''
+      )
+      .startsWith('insert')
+    ){
+
+      return;
+
+    }
+
+
+    const data =
+      event.data;
+
+
+    if(
+      typeof data !== 'string' ||
+      !data.length
+    ){
+
+      return;
+
+    }
+
+
+    const start =
+
+      typing.selectionStart ??
+
+      typing.value.length;
+
+
+    for(
+      let index = 0;
+      index < data.length;
+      index++
+    ){
+
+      if(
+        data[index] !==
+        text[
+          start +
+          index
+        ]
+      ){
+
+        state.typo++;
+
+      }
+
+    }
+
+
+    state.countedBeforeInput =
+      true;
+
+  }
+);
+
+
+typing.addEventListener(
+  'input',
+  event => {
+
+    if(
+      !state.raceStarted ||
+      state.finished
+    ){
+
+      return;
+
+    }
+
+
+    const value =
+      typing.value;
+
+
+    /*
+    Fallback browser.
+    */
+
+    if(
+
+      String(
+        event.inputType ||
+        ''
+      )
+      .startsWith('insert')
+
+      &&
+
+      !state.countedBeforeInput
+
+    ){
+
+      const oldValue =
+        state.lastValue;
+
+
+      let prefix =
+        0;
+
+
+      while(
+
+        prefix <
+        oldValue.length
+
+        &&
+
+        prefix <
+        value.length
+
+        &&
+
+        oldValue[prefix] ===
+        value[prefix]
+
+      ){
+
+        prefix++;
+
+      }
+
+
+      let oldEnd =
+        oldValue.length - 1;
+
+
+      let newEnd =
+        value.length - 1;
+
+
+      while(
+
+        oldEnd >= prefix
+
+        &&
+
+        newEnd >= prefix
+
+        &&
+
+        oldValue[oldEnd] ===
+        value[newEnd]
+
+      ){
+
+        oldEnd--;
+        newEnd--;
+
+      }
+
+
+      const inserted =
+
+        value.slice(
+          prefix,
+          newEnd + 1
+        );
+
+
+      for(
+        let index = 0;
+        index < inserted.length;
+        index++
+      ){
+
+        if(
+
+          inserted[index] !==
+
+          text[
+            prefix +
+            index
+          ]
+
+        ){
+
+          state.typo++;
+
+        }
+
+      }
+
+    }
+
+
+    state.countedBeforeInput =
+      false;
+
+
+    state.lastValue =
+      value;
+
+
+    let correct =
+      0;
+
+
+    for(
+      let index = 0;
+      index < value.length;
+      index++
+    ){
+
+      if(
+        value[index] ===
+        text[index]
+      ){
+
+        correct++;
+
+      }
+
+    }
+
+
+    const prefixCorrect =
+      correctPrefixLength(
+        value
+      );
+
+
+    const player =
+      state.players.find(
+        item =>
+          item.id ===
+          state.me?.id
+      );
+
+
+    if(!player){
+
+      return;
+
+    }
+
+
+    player.progress =
+
+      Math.min(
+
+        1,
+
+        prefixCorrect /
+        text.length
+
+      );
+
+
+    player.correct =
+      correct;
+
+
+    player.typed =
+      value.length;
+
+
+    player.typo =
+      state.typo;
+
+
+    renderTarget(
+      value
+    );
+
+
+    updatePlayerStats();
+
+
+    send({
+
+      type:'progress',
+
+      progress:
+        player.progress,
+
+      correct,
+
+      typed:
+        value.length,
+
+      typo:
+        state.typo,
+
+      wpm:
+        player.wpm,
+
+      acc:
+        player.acc
+
+    });
+
+
+    /*
+    Finish hanya saat teks 100% benar.
+    */
+
+    if(
+      value === text
+    ){
+
+      state.finished =
+        true;
+
+
+      typing.disabled =
+        true;
+
+
+      player.progress =
+        1;
+
+
+      player.done =
+        true;
+
+
+      player.time =
+
+        elapsedMs() /
+        1000;
+
+
+      updatePositions();
+
+
+      send({
+
+        type:'finish',
+
+        time:
+          player.time,
+
+        wpm:
+          player.wpm,
+
+        acc:
+          player.acc,
+
+        typo:
+          state.typo
+
+      });
+
+    }
+
+  }
+);
+
+
+/* =========================
+   SERVER FINISH BUTTON
+========================= */
+
+$('finishRace').onclick =
+  () => {
+
+    send({
+      type:'finishRace'
+    });
+
+  };
+
+
+/* =========================
+   RESULT HELPERS
+========================= */
+
+function sortPlayers(players){
+
+  return playerList(players)
+    .slice()
+    .sort(
+      (a,b) =>
+
+        (
+          a.rank ||
+          9999
+        )
+
+        -
+
+        (
+          b.rank ||
+          9999
+        )
+
+        ||
+
+        (
+          a.time ||
+          999999
+        )
+
+        -
+
+        (
+          b.time ||
+          999999
+        )
+
+        ||
+
+        String(
+          a.name ||
+          ''
+        )
+        .localeCompare(
+          String(
+            b.name ||
+            ''
+          )
+        )
+
+    );
+
+}
+
+
+function metricValue(
+  player,
+  key
+){
+
+  if(
+    !player?.done
+  ){
+
+    return '-';
+
+  }
+
+
+  if(
+    key === 'time'
+  ){
+
+    return (
+      Number(
+        player.time ||
+        0
+      )
+      .toFixed(1)
+      + 's'
+    );
+
+  }
+
+
+  if(
+    key === 'acc'
+  ){
+
+    return (
+      Math.round(
+        Number(
+          player.acc ||
+          0
+        )
+      )
+
+      + '%'
+    );
+
+  }
+
+
+  return (
+    player[key] ??
+    '-'
+  );
+
+}
+
+
+/* =========================
+   PLAYER RESULT
+========================= */
+
+function rankHtml(players){
+
+  return sortPlayers(players)
+    .map(
+      (player,index) => `
+
+        <div class="rank-item">
+
+          <span class="r">
+            #${player.rank || index + 1}
+          </span>
+
+          <span class="e">
+            ${esc(player.emoji)}
+          </span>
+
+          <span class="n">
+            ${esc(player.name)}
+          </span>
+
+          <span class="v">
+            ${
+              player.done
+
+                ? Number(
+                    player.time ||
+                    0
+                  )
+                  .toFixed(1)
+                  + 's'
+
+                : '-'
+            }
+          </span>
+
+        </div>
+
+      `
+    )
+    .join('');
+
+}
+
+
+function resultMetrics(player){
+
+  if(!player){
+
+    return `
+      <div class="my-name">
+        -
+      </div>
+    `;
+
+  }
+
+
+  return `
+
+    <div class="my-avatar">
+      ${esc(player.emoji)}
+    </div>
+
+    <div class="my-name">
+      ${esc(player.name)}
+    </div>
+
+    <div class="metrics">
+
+      <div class="metric">
+
+        <b>
+          ${
+            player.rank
+              ? '#' + player.rank
+              : '-'
+          }
+        </b>
+
+        <span>
+          RANK
+        </span>
+
+      </div>
+
+
+      <div class="metric">
+
+        <b>
+          ${metricValue(player,'wpm')}
+        </b>
+
+        <span>
+          WPM
+        </span>
+
+      </div>
+
+
+      <div class="metric">
+
+        <b>
+          ${metricValue(player,'typo')}
+        </b>
+
+        <span>
+          TYPO
+        </span>
+
+      </div>
+
+
+      <div class="metric">
+
+        <b>
+          ${metricValue(player,'time')}
+        </b>
+
+        <span>
+          TOTAL TIME
+        </span>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================
+   SERVER TOP 3
+========================= */
+
+function serverTop3Html(players){
+
+  return sortPlayers(players)
+    .slice(0,3)
+    .map(
+      (player,index) => `
+
+        <div
+          class="
+            server-top-card
+            place-${index + 1}
+          "
+        >
+
+          <div class="server-medal">
+
+            ${
+              [
+                '🥇',
+                '🥈',
+                '🥉'
+              ][index]
+            }
+
+          </div>
+
+
+          <div class="server-top-avatar">
+            ${esc(player.emoji)}
+          </div>
+
+
+          <div class="server-top-name">
+            ${esc(player.name)}
+          </div>
+
+
+          <div class="server-top-metrics">
+
+            <div class="server-top-metric">
+
+              ${
+                player.rank
+                  ? '#' + player.rank
+                  : '-'
+              }
+
+              <span>
+                RANK
+              </span>
+
+            </div>
+
+
+            <div class="server-top-metric">
+
+              ${metricValue(player,'wpm')}
+
+              <span>
+                WPM
+              </span>
+
+            </div>
+
+
+            <div class="server-top-metric">
+
+              ${metricValue(player,'typo')}
+
+              <span>
+                TYPO
+              </span>
+
+            </div>
+
+
+            <div class="server-top-metric">
+
+              ${metricValue(player,'time')}
+
+              <span>
+                TOTAL TIME
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `
+    )
+    .join('');
+
+}
+
+
+/* =========================
+   SERVER OTHER RANK
+========================= */
+
+function serverRestHtml(players){
+
+  const rows =
+    sortPlayers(players)
+      .slice(3);
+
+
+  if(
+    !rows.length
+  ){
+
+    return `
+
+      <div class="server-rank-row">
+
+        <span>
+          —
+        </span>
+
+        <span class="rank-name">
+          Tidak ada peserta lain
+        </span>
+
+      </div>
+
+    `;
+
+  }
+
+
+  return rows
+    .map(
+      (player,index) => `
+
+        <div class="server-rank-row">
+
+          <span class="rank-no">
+            #${player.rank || index + 4}
+          </span>
+
+          <span>
+            ${esc(player.emoji)}
+          </span>
+
+          <span class="rank-name">
+            ${esc(player.name)}
+          </span>
+
+        </div>
+
+      `
+    )
+    .join('');
+
+}
+
+
+/* =========================
+   SHOW RESULT
+========================= */
+
+function showResultScreen(players){
+
+  state.raceStarted =
+    false;
+
+
+  state.players =
+    playerList(players);
+
+
+  clearInterval(
+    timerInt
+  );
+
+
+  clearCountdown();
+
+
+  if(
+    role === 'server'
+  ){
+
+    $('serverTop3').innerHTML =
+      serverTop3Html(
+        state.players
+      );
+
+
+    $('serverRankList').innerHTML =
+      serverRestHtml(
+        state.players
+      );
+
+
+    show(
+      'resultServer'
+    );
+
+  }
+
+
+  else{
+
+    const me =
+      state.players.find(
+        item =>
+          item.id ===
+          state.me?.id
+      );
+
+
+    $('myResult').innerHTML =
+      resultMetrics(me);
+
+
+    $('rankList').innerHTML =
+      rankHtml(
+        state.players
+      );
+
+
+    show(
+      'resultPlayer'
+    );
+
+  }
+
+}
+
+
+/* =========================
+   TOP 3 SCREEN
+========================= */
+
+function showTop3(){
+
+  show(
+    'top3'
+  );
+
+
+  const top =
+    sortPlayers(
+      state.players
+    )
+    .slice(0,3);
+
+
+  $('top3Cards').innerHTML =
+
+    top
+      .map(
+        (player,index) => `
+
+          <div class="top-card">
+
+            <div class="medal">
+
+              ${
+                [
+                  '🥇',
+                  '🥈',
+                  '🥉'
+                ][index]
+              }
+
+            </div>
+
+
+            <div class="top-emoji">
+              ${esc(player.emoji)}
+            </div>
+
+
+            <div class="top-name">
+              ${esc(player.name)}
+            </div>
+
+
+            <div class="top-metrics">
+
+              <div class="top-metric">
+
+                ${
+                  player.rank
+                    ? '#' + player.rank
+                    : '-'
+                }
+
+                <span>
+                  RANK
+                </span>
+
+              </div>
+
+
+              <div class="top-metric">
+
+                ${metricValue(player,'wpm')}
+
+                <span>
+                  WPM
+                </span>
+
+              </div>
+
+
+              <div class="top-metric">
+
+                ${metricValue(player,'typo')}
+
+                <span>
+                  TYPO
+                </span>
+
+              </div>
+
+
+              <div class="top-metric">
+
+                ${metricValue(player,'time')}
+
+                <span>
+                  TOTAL TIME
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        `
+      )
+      .join('');
+
+}
+
+
+/* NEXT */
+
+$('nextTop3').onclick =
+  showTop3;
+
+
+$('serverNextTop3').onclick =
+  showTop3;
+
+
+/* =========================
+   NEW RACE / NEXT LEVEL
+========================= */
+
+$('restart').onclick = () => {
+
+  state.raceStarted =
+    false;
+
+
+  state.finished =
+    false;
+
+
+  clearInterval(
+    timerInt
+  );
+
+
+  if(
+    role === 'server'
+  ){
+
+    /*
+    Server memindahkan
+    semua player ke waiting room.
+
+    Worker akan mengubah
+    level menjadi 2.
+    */
+
+    send({
+      type:'newRace'
+    });
+
+
+    waitingScreen();
+
+  }
+
+
+  else{
+
+    /*
+    Player masuk waiting room
+    dan menunggu server.
+    */
+
+    waitingScreen();
+
+  }
+
+};
+
+
+/* =========================
+   AUTO OPEN FROM URL
+========================= */
+
+(function boot(){
+
+  const url =
+    new URL(
+      location.href
+    );
+
+
+  const mode =
+    url.searchParams
+      .get('mode');
+
+
+  const roomParam =
+    url.searchParams
+      .get('room');
+
+
+  if(
+    mode === 'player'
+  ){
+
+    role =
+      'player';
+
+
+    room =
+      roomParam ||
+      '';
+
+
+    $('joinStatus').textContent =
+
+      room
+        ? ''
+        : 'Gunakan PLAYER LINK yang dibagikan server.';
+
+
+    show(
+      'join'
+    );
+
+
+    return;
+
+  }
+
+
+  if(
+    mode === 'server'
+  ){
+
+    role =
+      'server';
+
+
+    room =
+      roomParam ||
+      makeRoom();
+
+
+    history.replaceState(
+      {},
+      '',
+      location.pathname +
+      `?mode=server&room=${room}`
+    );
+
+
+    state.me = {
+      name:'SERVER',
+      emoji:'🏁'
+    };
+
+
+    connect(
+      room
+    );
+
+
+    waitingScreen();
+
+  }
+
+})();
+
 </script>
+
 </body>
 </html>

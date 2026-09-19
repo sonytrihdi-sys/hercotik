@@ -1,9 +1,10 @@
 export class Room {
-  constructor(state) {
-    this.state = state;
-    this.clients = new Map();
-    this.phase = "waiting";
-    this.players = new Map();
+ constructor(state) {
+  this.state = state;
+  this.clients = new Map();
+  this.phase = "waiting";
+  this.level = 1;
+  this.players = new Map();
     this.countdownAt = 0;
     this.raceAt = 0;
     this.startTimer = null;
@@ -79,13 +80,22 @@ export class Room {
       this.phase = "countdown";
       this.countdownAt = Date.now() + 350;
       this.raceAt = this.countdownAt + (1250 * 3) + 900;
-      this.broadcast({ type: "countdown", countdownAt: this.countdownAt, raceAt: this.raceAt });
+      this.broadcast({
+  type: "countdown",
+  countdownAt: this.countdownAt,
+  raceAt: this.raceAt,
+  level: this.level
+});
       this.broadcastState();
 
       this.startTimer = setTimeout(() => {
         if (this.phase !== "countdown") return;
         this.phase = "race";
-        this.broadcast({ type: "race", raceAt: this.raceAt });
+        this.broadcast({
+  type: "race",
+  raceAt: this.raceAt,
+  level: this.level
+});
         this.broadcastState();
       }, Math.max(0, this.raceAt - Date.now()));
       return;
@@ -132,6 +142,9 @@ export class Room {
 
     if (m.type === "newRace") {
       if (actor.role !== "server") return;
+
+      this.level = 2;
+      
       if (this.startTimer) clearTimeout(this.startTimer);
       this.startTimer = null;
       this.phase = "waiting";
@@ -155,7 +168,11 @@ export class Room {
     finished.forEach((p,i) => { p.rank = i + 1; });
     unfinished.forEach((p,i) => { p.rank = finished.length + i + 1; });
 
-    this.broadcast({ type: "result", players: racers });
+    this.broadcast({
+  type: "result",
+  players: racers,
+  level: this.level
+});
   }
 
   send(id, m) {
@@ -169,14 +186,15 @@ export class Room {
   }
 
   broadcastState() {
-    this.broadcast({
-      type: "state",
-      phase: this.phase,
-      countdownAt: this.countdownAt,
-      raceAt: this.raceAt,
-      players: this.publicPlayers()
-    });
-  }
+  this.broadcast({
+    type: "state",
+    phase: this.phase,
+    level: this.level,
+    countdownAt: this.countdownAt,
+    raceAt: this.raceAt,
+    players: this.publicPlayers()
+  });
+}
 }
 
 export default {
